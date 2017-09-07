@@ -113,14 +113,18 @@ def colormask(im):
     #***************************************************#
 
 
-    return contours
+    #ピースの領域情報(角度の時使う)
+    pixelpoints = cv2.findNonZero(img_mask)
+
+
+    return (contours, pixelpoints)
     
 
 
 
 
 
-def approx_point(contours, im, Pieces):
+def approx_point(contours, im, Pieces, all_pixel):
     im0 = np.copy(im)
     #pieces = DATA.Piece()
 
@@ -155,7 +159,10 @@ def approx_point(contours, im, Pieces):
             length[i].append(np.linalg.norm(approx[next] - approx[prev]))      
             
 
-     
+
+      
+
+
        #角度を求める
         for (prev, cordinate) in enumerate(approx):
              pivot = prev + 1            
@@ -168,9 +175,22 @@ def approx_point(contours, im, Pieces):
                  next = 0
 
              #角度計算
-             VecA = approx[pivot] - approx[prev]
-             VecB = approx[pivot] - approx[next]
-             Ang = cul_angle(VecA[0], VecB[0])
+             VecA = approx[prev] - approx[pivot]
+             VecB = approx[next] - approx[pivot]
+      
+             Ang = cul_angle(VecA[0], VecB[0])        
+
+             #2点間の中点にピースは含まれていなかったら360から引く
+             direction = (VecA + VecB) / 10            
+             direction = direction + approx[pivot]
+             casted = direction.astype(int)
+
+             Ang = 360 - Ang
+             for(pixel) in all_pixel:
+                 if(casted[0,0] == pixel[0,0] and casted[0,1] == pixel[0,1]):
+                     Ang = 360 - Ang
+                     break
+
              angle[i].append(Ang)
              
         #角度リストをシフトして調整
