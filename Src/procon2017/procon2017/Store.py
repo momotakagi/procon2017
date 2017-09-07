@@ -180,6 +180,8 @@ def approx_point(contours, im, Pieces, all_pixel):
       
              Ang = cul_angle(VecA[0], VecB[0])        
 
+
+############################################力技###################################################
              #2点間の中点にピースは含まれていなかったら360から引く
              direction = (VecA + VecB) / 10            
              direction = direction + approx[pivot]
