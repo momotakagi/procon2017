@@ -12,4 +12,5 @@ if __name__ == '__main__':
     im = Store.get_im()
     cnts, all_pixel = Store.colormask(im)
 
+    #ここでデータ格納
     Store.approx_point(cnts, im, Pieces, all_pixel)

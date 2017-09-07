@@ -249,6 +249,7 @@ def approx_point(contours, im, Pieces, all_pixel):
     Pieces.Center_G = Center_G
     Pieces.length = length
     Pieces.angle = angle
+    Pieces.pixels = all_pixel
    
 
 
