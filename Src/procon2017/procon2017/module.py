@@ -31,13 +31,17 @@ class State:
         self.used_piece = []
 
         #評価値
-        self.point =0
+        self.point = 0
 
         #現在の頂点数
         self.total_edge = 0
 
+        #前のTree
+        self.prev
         #次のTree
-        self.next = []
+        #self.next = []
+        
+        
 
    
 
