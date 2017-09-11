@@ -2,7 +2,7 @@
 
 import Store 
 from module import Data #こんな書き方もできる
-
+from Search import Search
 
 
 if __name__ == '__main__':
@@ -15,3 +15,6 @@ if __name__ == '__main__':
     #ここでデータ格納
     Store.approx_point(cnts, im, Pieces, all_pixel)
 
+    #探索開始
+    search = Search(Pieces)
+    search.bfs()

@@ -5,6 +5,7 @@ import random
 import sys
 import copy
 import module 
+import math
 from matplotlib import pyplot as plt
 
 
@@ -33,7 +34,16 @@ def half_size(im):
     half_size = cv2.resize(im,(round(width/6),round(hight/6)))
     return half_size
     
+def get_distance(x, y):
 
+    x1 = x[0,0]
+    x2 = y[0,0]
+    y1 = x[0,1]
+    y2 = y[0,1]
+
+    d = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    d = round(d)
+    return d
 
 
 def findcontours(im):
@@ -156,9 +166,10 @@ def approx_point(contours, im, Pieces, all_pixel):
             if(next == len(approx)):
                 next = 0
             #辺の長さを格納
-            length[i].append(np.linalg.norm(approx[next] - approx[prev]))      
+            #length[i].append(np.linalg.norm(approx[prev] - approx[next]))      
+            #やや↓の方が、精度良い
+            length[i].append(get_distance(approx[prev], approx[next]))
             
-
 
       
 
@@ -250,7 +261,8 @@ def approx_point(contours, im, Pieces, all_pixel):
     Pieces.length = length
     Pieces.angle = angle
     Pieces.pixels = all_pixel
-   
+    Pieces.total_piece_num = len(polygon)
+    
 
 
 

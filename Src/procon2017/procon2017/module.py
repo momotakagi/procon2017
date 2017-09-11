@@ -15,6 +15,7 @@ class Data:
         self.length = [[]]
         self.angle = [[]]
         self.pixels = []
+        self.total_piece_num = int
 
 
 
@@ -22,13 +23,13 @@ class Data:
 class State:
      
     #コンストラクタ
-    def __init__(self, piece_n, edge_n):
+    def __init__(self, piece_n, edge_n, total_piece_num):
         '''木の要素'''
         self.piece_n = piece_n
         self.edge_n = edge_n
 
         #現在つかったピース
-        self.used_piece = []
+        self.used_piece = list(range(total_piece_num))
 
         #評価値
         self.point = 0
@@ -37,7 +38,7 @@ class State:
         self.total_edge = 0
 
         #前のTree
-        self.prev
+        self.prev = object
         #次のTree
         #self.next = []
         
