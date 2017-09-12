@@ -51,7 +51,7 @@ class Search:
             #rootをプッシュ
             self.queue.put(self.root_tmp)
        
-
+            
 
 
 
@@ -70,7 +70,7 @@ class Search:
            
     def _get_children(self, parent):
         
-            self.base_length = self.pieces.length[self.parent.piece_n][self.parent.edge_n]
+            self.base_length = self.pieces.length[self.parent.piece_n][self.parent.next_edge_n]
 
             #つかったピース以外のピースの数で回す
             for i in self.parent.used_piece:
