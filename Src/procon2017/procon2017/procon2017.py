@@ -18,3 +18,7 @@ if __name__ == '__main__':
     #探索開始
     search = Search(Pieces)
     search.bfs()
+
+
+
+    #eisei
