@@ -36,12 +36,12 @@ class Search:
     def bfs(self):
 
         #根を作成
-        self.root = State(-1,-1,total)        
+        self.root = State(-1,-1,-1,total)        
         
         for (i, edge_len) in enumerate(self.pieces.length[0]):
 
             #rootのインスタンス
-            self.root_tmp = State(0,i,total)
+            self.root_tmp = State(0,-1,i,total)
             self.root_tmp.prev = self.root
             #0のピースを使ったのでフラグに追加
             self.root_tmp.used_piece.remove(0)
@@ -70,7 +70,7 @@ class Search:
            
     def _get_children(self, parent):
         
-            self.p_length = self.pieces.length[self.parent.piece_n][self.parent.edge_n]
+            self.base_length = self.pieces.length[self.parent.piece_n][self.parent.edge_n]
 
             #つかったピース以外のピースの数で回す
             for i in self.parent.used_piece:

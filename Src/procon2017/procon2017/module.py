@@ -23,10 +23,11 @@ class Data:
 class State:
      
     #コンストラクタ
-    def __init__(self, piece_n, edge_n, total_piece_num):
+    def __init__(self, piece_n, prev_edge_n, next_edge_n, total_piece_num):
         '''木の要素'''
         self.piece_n = piece_n
-        self.edge_n = edge_n
+        self.prev_edge_n = prev_edge_n
+        self.next_edge_n = next_edge_n
 
         #現在つかったピース
         self.used_piece = list(range(total_piece_num))
