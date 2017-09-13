@@ -19,6 +19,4 @@ if __name__ == '__main__':
     search = Search(Pieces)
     search.bfs()
 
-
-
     #eisei
