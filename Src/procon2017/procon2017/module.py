@@ -32,6 +32,10 @@ class State:
         #現在つかったピース
         self.used_piece = list(range(total_piece_num))
 
+        #このブロック長さ&角度
+        self.this_length = []
+        self.this_angle = []
+
         #評価値
         self.point = 0
 
