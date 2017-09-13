@@ -41,6 +41,23 @@ class Search:
         __ANGLE_DELTA = 3
 
 
+    
+    def _route_list(route): #引数でリストを受け取る。
+        route_ = route[:]
+        row = []
+        box = route_
+        row.append(box) #リストの0番目（元の値）を格納
+        for node in xrange(len(route)-1): #リストを一回転する。
+           row.append(box) #リストのnode+1番目の初期化
+           row[node+1] = row[node][:] #初期化したものを、前のリストのコピーに置き換える。
+           row[node+1].append(row[node][0])
+           row[node+1].pop(0)
+
+        return row
+
+
+
+
     def bfs(self):
 
         #根を作成
@@ -70,7 +87,7 @@ class Search:
         while self.queue.empty() == False:
             #queueからpop
             self.parent = self.queue.get()          
-            self.__get_children(self.parent)
+            chindren = self._get_children(self.parent)
             #self.queue.put(children)
 
 
@@ -79,18 +96,30 @@ class Search:
 
 
            
-    def __get_children(self, parent):
+    def _get_children(self, parent):
         
-            #ベース
+            ###ベースたち###
             self.base_length = self.parent.this_length[self.parent.next_edge_n]
+
+            #いっこ前の添え字
+            self.zero = self.parent.next_edge_n - 1
+            if self.zero == -1:
+                self.zero = len(self.parent.this_angle) - 1
 
             self.second = self.parent.next_edge_n + 1
             if self.second == len(self.parent.this_angle):
                 self.second = 0
 
+            self.third = self.second + 1
+            if self.third == len(self.parent.this_angle):
+                self.third = 0
+
             self.base_first_angle = self.parent.this_angle[self.parent.next_edge_n]
             self.base_second_angle = self.parent.this_angle[self.second]
 
+            self.base_zero_length = self.parent.this_length[self.zero]
+            self.base_second_length = self.parent.this_length[self.second]
+            
 
             
             #つかったピース以外のピースの数で回す (iはピースの添字)
@@ -111,14 +140,16 @@ class Search:
                         self.first_total = self.base_first_angle + self.tmp_first_angle 
                         self.second_total = self.base_second_angle + self.tmp_second_angle
                         
-                        #角度もおっけい
+                        #角度条件満たす
                         #木に追加(インスタンス作成&深いコピー)ノードごとにブロックとして長さと角度を保持
-                        if self.first_total < (360 + __ANGLE_DELTA) :
-                            if abs(self.first_total - 360) < __ANGLE_DELTA:
-                                #合わせてちょうど360度
+                        #ふたつの角で条件を満たすならば
+                        if self.first_total < (360 + __ANGLE_DELTA) and self.second_total < (360 + __ANGLE_DELTA):
+                            
+                            #i番ピースの情報
+                            self.new_piece_edge = copy.deepcopy(self.pieces.length[i])
+                            self.new_piece_angle = copy.deepcopy(self.pieces.angle[i])
 
-                                if abs(self.fist_total - 180) < __ANGLE_DELTA:
-                                    #合わせてちょうど180度
+
                             
                         
                             
