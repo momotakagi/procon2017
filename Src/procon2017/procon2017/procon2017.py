@@ -20,3 +20,4 @@ if __name__ == '__main__':
     search.bfs()
 
     #eisei
+    draw = draw(Pieces)

@@ -24,6 +24,7 @@ class Search:
     #ピースの合計値
     total = int
 
+    #コンストラクタ
     def __init__(self, pieces):
         self.queue = queue.Queue()
         self.pieces = pieces
