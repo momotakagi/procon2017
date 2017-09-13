@@ -112,9 +112,13 @@ class Search:
                         self.second_total = self.base_second_angle + self.tmp_second_angle
                         
                         #角度もおっけい
-                        if abs(self.first_total - 360) < __ANGLE_DELTA:
-                            #木に追加(インスタンス作成&深いコピー)ノードごとにブロックとして長さと角度を保持
-                            if abs(self.fist_total - 180) < __ANGLE_DELTA:
+                        #木に追加(インスタンス作成&深いコピー)ノードごとにブロックとして長さと角度を保持
+                        if self.first_total < (360 + __ANGLE_DELTA) :
+                            if abs(self.first_total - 360) < __ANGLE_DELTA:
+                                #合わせてちょうど360度
+
+                                if abs(self.fist_total - 180) < __ANGLE_DELTA:
+                                    #合わせてちょうど180度
                             
                         
                             
