@@ -140,6 +140,7 @@ def approx_point(contours, im, Pieces, all_pixel):
 
     polygon = []
     Center_G = []
+    Area = []
     length = [[] for i in range(len(contours))]
     angle = [[] for i in range(len(contours))]
     
@@ -150,6 +151,9 @@ def approx_point(contours, im, Pieces, all_pixel):
         cx = int(M['m10']/M['m00'])
         cy = int(M['m01']/M['m00'])
         Center_G.append((cx,cy))
+
+        #面積
+        Area.append(cv2.contourArea(cnt))
 
         #輪郭近似
         epsilon = 0.01*cv2.arcLength(cnt,True)
@@ -254,12 +258,23 @@ def approx_point(contours, im, Pieces, all_pixel):
     
 
     show_im(im0, "im0")    
+   
+
+    tmp_list = []
+    #統合したリストを作成
+    for i in range(len(polygon)):
+        map =  {"polygon": polygon[i], "Center_G":Center_G[i], "length":length[i], "angle":angle[i], "Area":Area[i]}
+        tmp_list.append(map)
+
+    #ソート
+    sorted_list = sorted(tmp_list, key=lambda x:x["Area"])
     
+
     #データを格納
-    Pieces.polygon = polygon
-    Pieces.Center_G = Center_G
-    Pieces.length = length
-    Pieces.angle = angle
+    Pieces.polygon = [sorted_list[j]["polygon"] for j in range(len(polygon))]
+    Pieces.Center_G = [sorted_list[j]["Center_G"] for j in range(len(polygon))]
+    Pieces.length = [sorted_list[j]["length"] for j in range(len(polygon))]
+    Pieces.angle = [sorted_list[j]["angle"] for j in range(len(polygon))]
     Pieces.pixels = all_pixel
     Pieces.total_piece_num = len(polygon)
     

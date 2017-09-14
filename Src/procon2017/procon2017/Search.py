@@ -68,12 +68,23 @@ class Search:
             #rootのインスタンス
             self.root_tmp = State(0,-1,i,total)
             self.root_tmp.prev = self.root
+
             #角度と長さを追加
-            self.root_tmp.this_length = copy.deepcopy(self.pieces.length[0])
-            self.root_tmp.this_angle = copy.deepcopy(self.pieces.angle[0])
+            for i in range(len(self.pieces.length[0])):
+             
+                tmp1 = i + len(self.pieces.angle[0]) - 1
+                tmp2 = i + 1
+
+                if tmp1 >= len(self.pieces.angle[0]):
+                    tmp1 = tmp1 - len(self.pieces.angle[0])
+                if tmp2 >= len(self.pieces.length[0]):
+                    tmp2 = tmp2 - len(self.pieces.length[0]) 
+
+                self.root_tmp.this_main_angle.append([tmp1, i])
+                self.root_tmp.this_main_length.append([i,tmp2])
+
             #0のピースを使ったのでフラグに追加
             self.root_tmp.used_piece.remove(0)
-
 
             #self.root.next.append(self.root_tmp) nextの必要性が疑われるため
 
@@ -101,53 +112,7 @@ class Search:
             ###ベースたち###
             self.base_length = self.parent.this_length[self.parent.next_edge_n]
 
-            #いっこ前の添え字
-            self.zero = self.parent.next_edge_n - 1
-            if self.zero == -1:
-                self.zero = len(self.parent.this_angle) - 1
-
-            self.second = self.parent.next_edge_n + 1
-            if self.second == len(self.parent.this_angle):
-                self.second = 0
-
-            self.third = self.second + 1
-            if self.third == len(self.parent.this_angle):
-                self.third = 0
-
-            self.base_first_angle = self.parent.this_angle[self.parent.next_edge_n]
-            self.base_second_angle = self.parent.this_angle[self.second]
-
-            self.base_zero_length = self.parent.this_length[self.zero]
-            self.base_second_length = self.parent.this_length[self.second]
-            
-
-            
-            #つかったピース以外のピースの数で回す (iはピースの添字)
-            for i in self.parent.used_piece:
-                #そのi番ピースの辺の数回し長さ取得
-                for (j, c_length) in enumerate(self.pieces.length[i]):
-                    #ピース長さ一致
-                    if abs(self.base_length - c_length) < __LENGTH_DELTA:
-
-                        self.tmp_second = j + 1
-                        if self.tmp_second == len(self.pieces.angle[i]):
-                            self.tmp_second = 0
-
-                        self.tmp_first_angle = self.pieces.angle[i][j]
-                        self.tmp_second_angle = self.pieces.angle[i][self.tmp_second]
-                        
-                        #合計の角度
-                        self.first_total = self.base_first_angle + self.tmp_first_angle 
-                        self.second_total = self.base_second_angle + self.tmp_second_angle
-                        
-                        #角度条件満たす
-                        #木に追加(インスタンス作成&深いコピー)ノードごとにブロックとして長さと角度を保持
-                        #ふたつの角で条件を満たすならば
-                        if self.first_total < (360 + __ANGLE_DELTA) and self.second_total < (360 + __ANGLE_DELTA):
-                            
-                            #i番ピースの情報
-                            self.new_piece_edge = copy.deepcopy(self.pieces.length[i])
-                            self.new_piece_angle = copy.deepcopy(self.pieces.angle[i])
+           
 
 
                             
