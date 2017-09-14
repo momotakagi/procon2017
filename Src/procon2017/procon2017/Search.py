@@ -63,12 +63,43 @@ class Search:
         #根を作成
         self.root = State(-1,-1,-1,total)        
         
-        for (i, edge_len) in enumerate(self.pieces.length[0]):
+       
+        ###########人力で木を組む################
+        #rootのインスタンス
+        self.root_tmp = State(0,-1,2,total)
+        self.root_tmp.prev = self.root
 
-            #rootのインスタンス
-            self.root_tmp = State(0,-1,i,total)
-            self.root_tmp.prev = self.root
+        self.PIECE2 = State(2,1,3,total)
+        self.PIECE2.prev = root_tmp
+
+        self.PIECE1 = State(1,2,-1,total)
+        self.PIECE1.prev = PIECE2
+        
+        #ここで探索そしてreturn
+
+        children = self.PIECE1
+
+        return children
+            
+
+
+
+"""
+
+
+
+
+
+
+
+
+
+
+
+
+
             #角度と長さを追加
+
             self.root_tmp.this_length = copy.deepcopy(self.pieces.length[0])
             self.root_tmp.this_angle = copy.deepcopy(self.pieces.angle[0])
             #0のピースを使ったのでフラグに追加
@@ -161,3 +192,5 @@ class Search:
                     #完成品として出力
 
 
+
+"""

@@ -3,6 +3,7 @@
 import Store 
 from module import Data #こんな書き方もできる
 from Search import Search
+from draw import Draw
 
 
 if __name__ == '__main__':
@@ -17,6 +18,6 @@ if __name__ == '__main__':
 
     #探索開始
     search = Search(Pieces)
-    search.bfs()
+    child = search.bfs()
 
-    #eisei
+    draw = Draw(child, Pieces)
