@@ -70,10 +70,10 @@ class Search:
         self.root_tmp.prev = self.root
 
         self.PIECE2 = State(2,1,3,total)
-        self.PIECE2.prev = root_tmp
+        self.PIECE2.prev = self.root_tmp
 
         self.PIECE1 = State(1,2,-1,total)
-        self.PIECE1.prev = PIECE2
+        self.PIECE1.prev = self.PIECE2
         
         #ここで探索そしてreturn
 
