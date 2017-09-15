@@ -42,6 +42,23 @@ class Search:
         __ANGLE_DELTA = 3
 
 
+    
+    def _route_list(route): #引数でリストを受け取る。
+        route_ = route[:]
+        row = []
+        box = route_
+        row.append(box) #リストの0番目（元の値）を格納
+        for node in xrange(len(route)-1): #リストを一回転する。
+           row.append(box) #リストのnode+1番目の初期化
+           row[node+1] = row[node][:] #初期化したものを、前のリストのコピーに置き換える。
+           row[node+1].append(row[node][0])
+           row[node+1].pop(0)
+
+        return row
+
+
+
+
     def bfs(self):
 
         #根を作成
@@ -52,12 +69,23 @@ class Search:
             #rootのインスタンス
             self.root_tmp = State(0,-1,i,total)
             self.root_tmp.prev = self.root
+
             #角度と長さを追加
-            self.root_tmp.this_length = copy.deepcopy(self.pieces.length[0])
-            self.root_tmp.this_angle = copy.deepcopy(self.pieces.angle[0])
+            for i in range(len(self.pieces.length[0])):
+             
+                tmp1 = i + len(self.pieces.angle[0]) - 1
+                tmp2 = i + 1
+
+                if tmp1 >= len(self.pieces.angle[0]):
+                    tmp1 = tmp1 - len(self.pieces.angle[0])
+                if tmp2 >= len(self.pieces.length[0]):
+                    tmp2 = tmp2 - len(self.pieces.length[0]) 
+
+                self.root_tmp.this_main_angle.append([tmp1, i])
+                self.root_tmp.this_main_length.append([i,tmp2])
+
             #0のピースを使ったのでフラグに追加
             self.root_tmp.used_piece.remove(0)
-
 
             #self.root.next.append(self.root_tmp) nextの必要性が疑われるため
 
@@ -71,7 +99,7 @@ class Search:
         while self.queue.empty() == False:
             #queueからpop
             self.parent = self.queue.get()          
-            self.__get_children(self.parent)
+            chindren = self._get_children(self.parent)
             #self.queue.put(children)
 
 
@@ -80,46 +108,14 @@ class Search:
 
 
            
-    def __get_children(self, parent):
+    def _get_children(self, parent):
         
-            #ベース
+            ###ベースたち###
             self.base_length = self.parent.this_length[self.parent.next_edge_n]
 
-            self.second = self.parent.next_edge_n + 1
-            if self.second == len(self.parent.this_angle):
-                self.second = 0
-
-            self.base_first_angle = self.parent.this_angle[self.parent.next_edge_n]
-            self.base_second_angle = self.parent.this_angle[self.second]
+           
 
 
-            
-            #つかったピース以外のピースの数で回す (iはピースの添字)
-            for i in self.parent.used_piece:
-                #そのi番ピースの辺の数回し長さ取得
-                for (j, c_length) in enumerate(self.pieces.length[i]):
-                    #ピース長さ一致
-                    if abs(self.base_length - c_length) < __LENGTH_DELTA:
-
-                        self.tmp_second = j + 1
-                        if self.tmp_second == len(self.pieces.angle[i]):
-                            self.tmp_second = 0
-
-                        self.tmp_first_angle = self.pieces.angle[i][j]
-                        self.tmp_second_angle = self.pieces.angle[i][self.tmp_second]
-                        
-                        #合計の角度
-                        self.first_total = self.base_first_angle + self.tmp_first_angle 
-                        self.second_total = self.base_second_angle + self.tmp_second_angle
-                        
-                        #角度もおっけい
-                        #木に追加(インスタンス作成&深いコピー)ノードごとにブロックとして長さと角度を保持
-                        if self.first_total < (360 + __ANGLE_DELTA) :
-                            if abs(self.first_total - 360) < __ANGLE_DELTA:
-                                #合わせてちょうど360度
-
-                                if abs(self.fist_total - 180) < __ANGLE_DELTA:
-                                    #合わせてちょうど180度
                             
                         
                             
