@@ -35,6 +35,7 @@ class State:
 
         #新しいデータ型
         #このブロック長さ&角度
+        #this main lengthの場合　[[1番目の角度のindex, 2番目の角度のindex, 実際の角度], ...]
         self.this_main_length = []
         self.this_main_angle = []
         

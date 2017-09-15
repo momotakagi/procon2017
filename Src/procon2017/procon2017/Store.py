@@ -219,6 +219,21 @@ def approx_point(contours, im, Pieces, all_pixel):
      
      
     
+    ######面積順に並べ替え###############
+    tmp_list = []
+    #統合したリストを作成
+    for i in range(len(polygon)):
+        map =  {"polygon": polygon[i], "Center_G":Center_G[i], "length":length[i], "angle":angle[i], "Area":Area[i]}
+        tmp_list.append(map)
+
+    #ソート
+    sorted_list = sorted(tmp_list, key=lambda x:x["Area"])
+
+    polygon = [sorted_list[j]["polygon"] for j in range(len(polygon))]
+    Center_G = [sorted_list[j]["Center_G"] for j in range(len(polygon))]
+    length = [sorted_list[j]["length"] for j in range(len(polygon))]
+    angle = [sorted_list[j]["angle"] for j in range(len(polygon))]
+    ##################################
 
 
    #********************************DEBUG表示用***********************************************************###
@@ -260,15 +275,6 @@ def approx_point(contours, im, Pieces, all_pixel):
     show_im(im0, "im0")    
    
 
-    tmp_list = []
-    #統合したリストを作成
-    for i in range(len(polygon)):
-        map =  {"polygon": polygon[i], "Center_G":Center_G[i], "length":length[i], "angle":angle[i], "Area":Area[i]}
-        tmp_list.append(map)
-
-    #ソート
-    sorted_list = sorted(tmp_list, key=lambda x:x["Area"])
-    
 
     #データを格納
     Pieces.polygon = [sorted_list[j]["polygon"] for j in range(len(polygon))]
