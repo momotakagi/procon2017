@@ -40,7 +40,8 @@ class State:
         self.this_main_angle = []
         
 
-        
+        #表裏判定
+        self.Is_reverse = True
 
 
         #評価値

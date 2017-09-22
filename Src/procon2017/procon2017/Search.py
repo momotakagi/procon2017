@@ -26,6 +26,8 @@ class Search:
     #定数群
     __LENGTH_DELTA = int
     __ANGLE_DELTA = int
+    __POINT180 = int
+    __POINT360 = int
 
     #ピースの合計値
     total = int
@@ -36,10 +38,15 @@ class Search:
         self.pieces = pieces
         global __LENGTH_DELTA
         global __ANGLE_DELTA
+        global __POINT180
+        global __POINT360
         global total
+
         total = pieces.total_piece_num
         __LENGTH_DELTA = 9
         __ANGLE_DELTA = 2
+        __POINT180 = 50
+        __POINT360 = 100
 
 
     
@@ -99,63 +106,75 @@ class Search:
     def bfs(self):
         """幅優先探索"""
 
+        ######################
+        Finish_Node = []
+        ######################3
 
         #根を作成
         root = State(-1,-1,-1,total)        
         
         for (j, edge_len) in enumerate(self.pieces.length[0]):
-
             #rootのインスタンス
             root_tmp = State(0,-1,j,total)
             root_tmp.prev = root
-
-            """
-            #角度と長さを追加
-            for i in range(len(self.pieces.length[0])):
-             
-                tmp1 = i + len(self.pieces.angle[0]) - 1
-                tmp2 = i + 1
-
-                if tmp1 >= len(self.pieces.angle[0]):
-                    tmp1 = tmp1 - len(self.pieces.angle[0])
-                if tmp2 >= len(self.pieces.length[0]):
-                    tmp2 = tmp2 - len(self.pieces.length[0]) 
-
-                root_tmp.this_main_angle.append([tmp1, i, self.pieces.angle[0][i]])
-                root_tmp.this_main_length.append([i,tmp2, self.pieces.length[0][i]])
-
-            """
-
             root_tmp.this_main_angle, root_tmp.this_main_length = self.make_piece_collection(0)
 
             #0のピースを使ったのでフラグに追加
             root_tmp.used_piece.remove(0)
-
             #self.root.next.append(self.root_tmp) nextの必要性が疑われるため
-
             #rootをプッシュ
             self.queue.put(root_tmp)
-       
-            
-
-
+                  
 
         while self.queue.empty() == False:
             #queueからpop
             parent = self.queue.get()          
-            chindren = self._get_children(parent)
-            #self.queue.put(children)
+
+            children = self._get_children(parent)
+            
+            
+            for child in children:
+                if child.used_piece == []:
+                    #すべてのピース使ったら                                
+                    #これは角の数をカウント
+                    edge_num = 0
+                    for x in range(len(child.this_main_length)):
+                        if child.this_main_length[x][0] != -1:
+                            edge_num = edge_num + 1
+                    child.total_edge = edge_num
+
+                    print("\nUsed all pieces total_edge is " + str(child.total_edge) +" point = " + str(child.point))
 
 
+                    ##################!!!!DEBUG!!!!#################
+                    pt = child
+                    while pt.piece_n != -1:                          
+                        print("piece:" + str(pt.piece_n) + " next_edge" + str(pt.next_edge_n) + " prev_edge" + str(pt.prev_edge_n))
+                        pt = pt.prev
+                    ###############################################
+
+                    #終わったシリーズにappend
+                    Finish_Node.append(child)
+
+                else:
+                    #PUSH
+                    self.queue.put(child)
 
 
+            print("Get Child fin")
+        #辺を評価順にソート
+        Finish_Node = sorted(Finish_Node, key=lambda x: -x.point)
+        print("FINISH OF BFS")  
+
+        return Finish_Node
 
 
-           
+        
     def _get_children(self, parent):
         """探索対象は単ピース"""
 
-       
+        #返却される子どもたち
+        rt_children = []
 
         ###ベースたち###       
         f_index = parent.this_main_length[parent.next_edge_n][0]
@@ -165,7 +184,7 @@ class Search:
         first_angle = parent.this_main_angle[f_index][2]
         second_angle = parent.this_main_angle[s_index][2]
 
-
+        
         
         #裏表考慮のため2回
         #iはピース番号_tmp_lenは長さ
@@ -176,7 +195,7 @@ class Search:
                 #ピースを新しいデータ型にする
                 tmp_main_angle, tmp_main_length = self.make_piece_collection(i)
 
-                for (j, tmp_len) in enumerate(self.pieces.length[i]):
+                for (j, tmp_len) in enumerate(self.pieces.length[i]):                  
                     #####長さ＆角度条件を満たす#####
                     if abs(tmp_len - base_length) < __LENGTH_DELTA:
                         #対象となる角度と足し算
@@ -184,17 +203,26 @@ class Search:
 
                         if double == 0:
                             double2 = 1
+                            is_reverse = True
                         else:
                             double2 = 0
+                            is_reverse = False
 
                         tmp_angle2 = second_angle + tmp_main_angle[tmp_main_length[j][double2]][2]
 
                         if (tmp_angle1 < 360 + __ANGLE_DELTA) and (tmp_angle2 < 360 + __ANGLE_DELTA) :
+                            #角度と長さの条件を満した   
+
+                            print("_____________________")
+                            print("piece:"+ str(i) + " edge" + str(j) + "↓") 
                             
+
                             #格納先となる子供ノードを作成
                             child = State(i, j, -1, total)
                             child.prev = parent
-                            child.used_piece.remove(i)
+                            child.used_piece = copy.deepcopy(parent.used_piece)
+                            child.used_piece.remove(i)       
+                            child.Is_reverse = is_reverse
                             child.this_main_angle = copy.deepcopy(parent.this_main_angle)
                             child.this_main_length = copy.deepcopy(parent.this_main_length)
                             child.this_main_angle.extend(copy.deepcopy(tmp_main_angle))
@@ -209,22 +237,15 @@ class Search:
 
 
                             #使ったエッジを消去するフラグ
-                            edge_flag = [z for z in range(len(self.pieces.length[i]))]
-                            edge_flag.remove(j)
+                            #edge_flag = [z for z in range(len(self.pieces.length[i]))]
+                            #edge_flag.remove(j)
 
                              #角度の統合
                             child.this_main_angle[f_index][2] = tmp_angle1
                             child.this_main_angle[s_index][2] = tmp_angle2
 
 
-                            """
-                            #辺mainの削除(通常)
-                            #辺ｍainのぶつかっている辺を削除
-                            child.this_main_length[parent.next_edge_n][0] = -1
-                            child.this_main_length[parent.next_edge_n][1] = -1
-                            child.this_main_length[len(parent.this_main_length) + j][0] = -1
-                            child.this_main_length[len(parent.this_main_length) + j][1] = -1
-                            """
+
 
                             ###
                             #辺mainのindex update(新しい方のindexに変更)
@@ -234,11 +255,15 @@ class Search:
                            
                             
 
+#######################################################################################################################################################################
 
-
-                            """ここから 180 360 の辺の統合処理(各辺と角が格納されているデータベースのアップデート作業)"""
+                            """angle1 !! ここから 180 360 の辺の統合処理(各辺と角が格納されているデータベースのアップデート作業)"""
 
                             if abs(tmp_angle1 - 180) < __ANGLE_DELTA:
+
+                                ###180度を獲得したのでポイント
+                                child.point += __POINT180
+
 
                                 #辺main処理→base側角をtmp側角を指すように tmp側角をbase側角を指すように
                                 _tmp_other = self.get_other_index(tmp_main_angle[tmp_main_length[j][double]], j)
@@ -251,17 +276,20 @@ class Search:
                                 child.this_main_length[_tmp_other + _old_len][__tmp_hit_angle1_index] = self.get_other_index(child.this_main_length[_tmp_base_other], f_index) #tmpの辺mainの角にこれ代入
                                 child.this_main_length[_tmp_base_other][__base_hit_angle1_index] =__tmp_next_edge #baseの辺mainの角にこれ代入
                                 
-                                #辺の長さ加算(base tmp 両側に(念のため))
+                                #辺の長さ加算(base tmp 両側に(念のため))(たぶんいらない)
                                 child.this_main_length[_tmp_base_other][2] += child.this_main_length[_tmp_other + _old_len][2]
                                 child.this_main_length[_tmp_other + _old_len][2] += child.this_main_length[_tmp_base_other][2]
-
-
 
                                 #角main処理
                                 child.this_main_angle[__tmp_next_edge][child.this_main_angle[__tmp_next_edge].index(_tmp_other + _old_len)] = _tmp_base_other
 
+                                #使えない辺を-1にする
+                                child.this_main_length[_tmp_other + _old_len][0] = -1
+                                child.this_main_length[_tmp_other + _old_len][1] = -1
 
-                                print("DEBUG")
+
+
+                                print("180 angle1")
 
                                 """
                                 #辺の長さを統合
@@ -279,7 +307,12 @@ class Search:
                                  
                                
                             elif abs(tmp_angle1 - 360) < __ANGLE_DELTA:
-                                print("DEBUG")
+                                print("360 angle 1")
+
+                                ###360を獲得したのでポイント給付
+                                child.point += __POINT360
+
+
                                 ########変数群#########
                                 _side = double
                                 _side_main = 0
@@ -308,7 +341,22 @@ class Search:
                                     if abs(next_tmp_length - next_base_length) < __LENGTH_DELTA:
                                         #となりと長さ一致
                                         if abs((next_tmp_ang + next_base_ang) - 180) < __LENGTH_DELTA:
-                                            #そしてとなり180
+                                            #####そしてとなり180###########
+
+                                            ###180度を獲得したのでポイント
+                                            child.point += __POINT180
+
+                                            ######update処理##########
+                                            _side = tmp_main_length[_tmp_other].index(self.get_other_index(tmp_main_length[_tmp_other], tmp_main_length[_t_index][_side]))
+                                            _t_index = _tmp_other
+                                            _side_main =  parent.this_main_length[_tmp_base_other].index(self.get_other_index(child.this_main_length[_tmp_base_other], parent.this_main_length[_m_index][_side_main]))
+                                            _m_index = _tmp_base_other
+                                            ##########################
+
+                                            _tmp_other = self.get_other_index(tmp_main_angle[tmp_main_length[_t_index][_side]], _t_index)                         
+                                            _tmp_base_other = self.get_other_index(parent.this_main_angle[parent.this_main_length[_m_index][_side_main]], _m_index)
+
+
                                             #辺main処理→base側角をtmp側角を指すように tmp側角をbase側角を指すように
                                             __tmp_hit_angle1_index = child.this_main_length[_tmp_other + _old_len].index(tmp_main_length[_t_index][_side] + _old_len) #これにbaseの角代入
                                             __base_hit_angle1_index = child.this_main_length[_tmp_base_other].index(parent.this_main_length[_m_index][_side_main]) #これにtmpの角代入
@@ -324,13 +372,30 @@ class Search:
                                             #角main処理
                                             child.this_main_angle[__tmp_next_edge][child.this_main_angle[__tmp_next_edge].index(_tmp_other + _old_len)] = _tmp_base_other
 
-                                            
+                                            #使えない辺を-1にする
+                                            child.this_main_length[_m_index][0] = -1
+                                            child.this_main_length[_m_index][1] = -1
+                                            child.this_main_length[_t_index + _old_len][0] = -1
+                                            child.this_main_length[_t_index + _old_len][1] = -1
+
 
 
                                         elif abs((next_tmp_ang + next_base_ang) - 360) < __LENGTH_DELTA:
                                             roop_flag = True
                                             print("360だったので次に移行します")
+
+
+                                            ###360を獲得したのでポイント給付
+                                            child.point += __POINT360
                                         
+                                            #今後使わない辺を-1する
+                                            child.this_main_length[_tmp_other + _old_len][0] = -1
+                                            child.this_main_length[_tmp_other + _old_len][1] = -1
+                                            child.this_main_length[_tmp_base_other][0] = -1
+                                            child.this_main_length[_tmp_base_other][1] = -1
+
+
+
                                         else:
                                             #[通常360]
                                             _delta_length = abs(next_tmp_length - next_base_length)
@@ -343,7 +408,195 @@ class Search:
                                             child.this_main_angle[__tmp_next_edge][2] += 180
                                             child.this_main_angle[__tmp_next_edge][tmp_main_angle[self.get_other_index(tmp_main_length[_tmp_other], tmp_main_length[_t_index][_side])].index(_tmp_other)] = _tmp_base_other
 
-                                            print("BREAK POINT")
+                                            #今後使わない辺を-1する[通常]
+                                            child.this_main_length[_tmp_other + _old_len][0] = -1
+                                            child.this_main_length[_tmp_other + _old_len][1] = -1
+
+
+
+
+
+
+
+
+                                    if roop_flag == False:
+                                        break
+                                    else:
+                                        roop_flag = False
+                                    
+
+                                        #前回の_sideじゃない方を_sideとして指定
+                                    _side = tmp_main_length[_tmp_other].index(self.get_other_index(tmp_main_length[_tmp_other], tmp_main_length[_t_index][_side]))
+                                    _t_index = _tmp_other
+                                    _side_main =  parent.this_main_length[_tmp_base_other].index(self.get_other_index(child.this_main_length[_tmp_base_other], parent.this_main_length[_m_index][_side_main]))
+                                    _m_index = _tmp_base_other
+                                
+                                    
+                                
+                                
+                    
+                            else:
+                                #angle tmp1 がとりあえず[通常状態]
+                                #通常[
+                                    #辺mainはtmpの比較の隣接する辺の角を指しているindexを古いものに更新
+                                    #角mainはbase側の角の辺を指しているindexをtmp側に更新
+                                #]
+                                #後index系はchildで統一
+                                #tmp側のindexはj                               
+                                _tmp_other = self.get_other_index(tmp_main_angle[tmp_main_length[j][double]], j)
+                                child.this_main_length[_tmp_other + _old_len][child.this_main_length[_tmp_other + _old_len].index(tmp_main_length[j][double] + _old_len)] = f_index
+
+                                child.this_main_angle[f_index][parent.this_main_angle[f_index].index(parent.next_edge_n)] = _tmp_other + _old_len
+
+                                print("通常 angle1")
+
+
+
+  #######################################################################################################################################################################                              
+                                
+                                                           
+
+
+                            """angle 2 !! ここから 180 360 の辺の統合処理(各辺と角が格納されているデータベースのアップデート作業)"""
+
+                            if abs(tmp_angle2 - 180) < __ANGLE_DELTA:
+
+                                ###180度を獲得したのでポイント
+                                child.point += __POINT180
+
+
+                                #辺main処理→base側角をtmp側角を指すように tmp側角をbase側角を指すように
+                                _tmp_other = self.get_other_index(tmp_main_angle[tmp_main_length[j][double2]], j)
+                                _tmp_base_other = self.get_other_index(parent.this_main_angle[s_index], parent.next_edge_n)
+
+                                __tmp_hit_angle1_index = child.this_main_length[_tmp_other + _old_len].index(tmp_main_length[j][double2] + _old_len) #これにbaseの角代入
+                                __base_hit_angle1_index = child.this_main_length[_tmp_base_other].index(s_index) #これにtmpの角代入
+
+                                __tmp_next_edge = self.get_other_index(child.this_main_length[_tmp_other + _old_len], tmp_main_length[j][double2] + _old_len)
+                                child.this_main_length[_tmp_other + _old_len][__tmp_hit_angle1_index] = self.get_other_index(child.this_main_length[_tmp_base_other], s_index) #tmpの辺mainの角にこれ代入
+                                child.this_main_length[_tmp_base_other][__base_hit_angle1_index] =__tmp_next_edge #baseの辺mainの角にこれ代入
+                                
+                                #辺の長さ加算(base tmp 両側に(念のため))
+                                child.this_main_length[_tmp_base_other][2] += child.this_main_length[_tmp_other + _old_len][2]
+                                child.this_main_length[_tmp_other + _old_len][2] += child.this_main_length[_tmp_base_other][2]
+
+
+
+                                #角main処理
+                                child.this_main_angle[__tmp_next_edge][child.this_main_angle[__tmp_next_edge].index(_tmp_other + _old_len)] = _tmp_base_other
+
+                                #使えない辺を-1にする
+                                child.this_main_length[_tmp_other + _old_len][0] = -1
+                                child.this_main_length[_tmp_other + _old_len][1] = -1
+
+                                print("180 angle2")
+
+                                 
+                               
+                            elif abs(tmp_angle2 - 360) < __ANGLE_DELTA:
+                                print("360 angle2")
+
+                                ###360を獲得したのでポイント給付
+                                child.point += __POINT360
+
+
+
+                                ########変数群#########
+                                _side = double2
+                                _side_main = 1
+                                _t_index = j
+                                _m_index = parent.next_edge_n
+                                roop_flag = False
+                                #parent.this_main_length[parent.next_edge_n][0]
+                                #s_index =  parent.this_main_length[_m_index][_side_main]
+                                #######################
+
+                                for edge in range(len(self.pieces.length[i]) - 2):
+                                     
+
+                                    #angle1つまり_sideの方のindexの辺の長さを辿る
+                                    #360になった方の長さ取得
+                                    _tmp_other = self.get_other_index(tmp_main_angle[tmp_main_length[_t_index][_side]], _t_index)                         
+                                    _tmp_base_other = self.get_other_index(parent.this_main_angle[parent.this_main_length[_m_index][_side_main]], _m_index)
+
+                                    next_tmp_length = tmp_main_length[_tmp_other][2]
+                                    next_base_length = parent.this_main_length[_tmp_base_other][2]
+
+                                    next_tmp_ang = tmp_main_angle[self.get_other_index(tmp_main_length[_tmp_other], tmp_main_length[_t_index][_side])][2]
+                                    next_base_ang = parent.this_main_angle[self.get_other_index(child.this_main_length[_tmp_base_other], parent.this_main_length[_m_index][_side_main])][2]
+
+                                    
+                                    if abs(next_tmp_length - next_base_length) < __LENGTH_DELTA:
+                                        #となりと長さ一致
+                                        if abs((next_tmp_ang + next_base_ang) - 180) < __LENGTH_DELTA:
+                                            #そしてとなり180
+
+                                            ###180度を獲得したのでポイント
+                                            child.point += __POINT180
+
+
+                                            ####update#######
+                                            _side = tmp_main_length[_tmp_other].index(self.get_other_index(tmp_main_length[_tmp_other], tmp_main_length[_t_index][_side]))
+                                            _t_index = _tmp_other
+                                            _side_main =  parent.this_main_length[_tmp_base_other].index(self.get_other_index(child.this_main_length[_tmp_base_other], parent.this_main_length[_m_index][_side_main]))
+                                            _m_index = _tmp_base_other
+
+                                            _tmp_other = self.get_other_index(tmp_main_angle[tmp_main_length[_t_index][_side]], _t_index)                         
+                                            _tmp_base_other = self.get_other_index(parent.this_main_angle[parent.this_main_length[_m_index][_side_main]], _m_index)
+
+
+                                            #辺main処理→base側角をtmp側角を指すように tmp側角をbase側角を指すように
+                                            __tmp_hit_angle1_index = child.this_main_length[_tmp_other + _old_len].index(tmp_main_length[_t_index][_side] + _old_len) #これにbaseの角代入
+                                            __base_hit_angle1_index = child.this_main_length[_tmp_base_other].index(parent.this_main_length[_m_index][_side_main]) #これにtmpの角代入
+
+                                            __tmp_next_edge = self.get_other_index(child.this_main_length[_tmp_other + _old_len], tmp_main_length[_t_index][_side] + _old_len)
+                                            child.this_main_length[_tmp_other + _old_len][__tmp_hit_angle1_index] = self.get_other_index(child.this_main_length[_tmp_base_other], parent.this_main_length[_m_index][_side_main]) #tmpの辺mainの角にこれ代入
+                                            child.this_main_length[_tmp_base_other][__base_hit_angle1_index] =__tmp_next_edge #baseの辺mainの角にこれ代入
+                                
+                                            #辺の長さ加算(base tmp 両側に(念のため))
+                                            child.this_main_length[_tmp_base_other][2] += child.this_main_length[_tmp_other + _old_len][2]
+                                            child.this_main_length[_tmp_other + _old_len][2] += child.this_main_length[_tmp_base_other][2]
+
+                                            #角main処理
+                                            child.this_main_angle[__tmp_next_edge][child.this_main_angle[__tmp_next_edge].index(_tmp_other + _old_len)] = _tmp_base_other
+
+                                            #使えない辺を-1にする5
+                                            child.this_main_length[_m_index][0] = -1
+                                            child.this_main_length[_m_index][1] = -1
+                                            child.this_main_length[_t_index  + _old_len][0] = -1
+                                            child.this_main_length[_t_index  + _old_len][1] = -1
+
+
+                                        elif abs((next_tmp_ang + next_base_ang) - 360) < __LENGTH_DELTA:
+                                            roop_flag = True
+                                            print("360だったので次に移行します")
+
+                                            ###360を獲得したのでポイント給付
+                                            child.point += __POINT360
+
+                                            #今後使わない辺を-1する
+                                            child.this_main_length[_tmp_other + _old_len][0] = -1
+                                            child.this_main_length[_tmp_other + _old_len][1] = -1
+                                            child.this_main_length[_tmp_base_other][0] = -1
+                                            child.this_main_length[_tmp_base_other][1] = -1
+                                        
+
+                                        else:
+                                            #[通常360]
+                                            _delta_length = abs(next_tmp_length - next_base_length)
+                                            child.this_main_length[_tmp_base_other][2] = _delta_length
+                                            #辺main→辺のindex変更(baseへ)
+                                            __tmp_next_edge =  self.get_other_index(child.this_main_length[_tmp_other + _old_len], tmp_main_length[_t_index][_side] + _old_len)
+                                            child.this_main_length[_tmp_base_other][child.this_main_length[_tmp_base_other].index(parent.this_main_length[_m_index][_side_main])] = __tmp_next_edge
+                                            
+                                            #角mian→角のindex変更と値の更新
+                                            child.this_main_angle[__tmp_next_edge][2] += 180
+                                            child.this_main_angle[__tmp_next_edge][tmp_main_angle[self.get_other_index(tmp_main_length[_tmp_other], tmp_main_length[_t_index][_side])].index(_tmp_other)] = _tmp_base_other
+
+                                            #今後使わない辺を-1する[通常]
+                                            child.this_main_length[_tmp_other + _old_len][0] = -1
+                                            child.this_main_length[_tmp_other + _old_len][1] = -1
+
 
 
 
@@ -365,7 +618,7 @@ class Search:
                                 
 
 
-
+                                
 
                             else:
                                 #angle tmp1 がとりあえず[通常状態]
@@ -375,12 +628,12 @@ class Search:
                                 #]
                                 #後index系はchildで統一
                                 #tmp側のindexはj                               
-                                _tmp_other = self.get_other_index(tmp_main_angle[tmp_main_length[j][double]], j)
-                                child.this_main_length[_tmp_other + _old_len][child.this_main_length[_tmp_other + _old_len].index(tmp_main_length[j][double] + _old_len)] = f_index
+                                _tmp_other = self.get_other_index(tmp_main_angle[tmp_main_length[j][double2]], j)
+                                child.this_main_length[_tmp_other + _old_len][child.this_main_length[_tmp_other + _old_len].index(tmp_main_length[j][double2] + _old_len)] = s_index
 
-                                child.this_main_angle[f_index][parent.this_main_angle[f_index].index(parent.next_edge_n)] = _tmp_other + _old_len
+                                child.this_main_angle[s_index][parent.this_main_angle[s_index].index(parent.next_edge_n)] = _tmp_other + _old_len
 
-                                print("通常")
+                                print("通常 angle2")
 
 
                             #辺ｍainのぶつかっている辺を削除
@@ -389,28 +642,28 @@ class Search:
                             child.this_main_length[len(parent.this_main_length) + j][0] = -1
                             child.this_main_length[len(parent.this_main_length) + j][1] = -1
 
-                            print("BREAK POINT")
- 
-                                
-                                
-
-
-                                
-
-
+                            
                                 
       
-            
-        
-           
+#######################################################################################################################################################################            
+                                                    
 
+                            #next_edgeをそのピースの辺分生成
 
-                            
+                            if child.used_piece == []:
+                                rt_children.append(child)
+                            else:
+                                for x in range(len(child.this_main_length)):
+                                    if child.this_main_length[x][0] != -1:
+                                        tmp_child = copy.deepcopy(child)
+                                        tmp_child.next_edge_n = x    
+                                        rt_children.append(copy.deepcopy(tmp_child))
+
+                                                           
+
                         
-                            
-
-            #またどっかでnext_edgeをそのピース分生成しなくてはならない
-
+            
+        return rt_children
 
             #もしすべてのピースを使ったら and 頂点数が枠と同じ(±1)なら
                     #完成品として出力
