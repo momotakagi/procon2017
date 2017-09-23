@@ -3,6 +3,7 @@
 import Store 
 from module import Data #こんな書き方もできる
 from Search import Search
+import time
 
 
 if __name__ == '__main__':
@@ -17,7 +18,9 @@ if __name__ == '__main__':
 
     #探索開始
     search = Search(Pieces)
+    t = time.time()
     search.bfs()
+    print ("time=" + str(time.time() - t))
 
     #eisei
-    draw = draw(Pieces)
+    #draw = draw(Pieces)
