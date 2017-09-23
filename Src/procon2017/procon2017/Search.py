@@ -17,8 +17,8 @@
 import queue
 import copy
 from module import State
-from functools import lru_cache
-from multiprocessing import Pool
+
+
 
 class Search:
     """探索するクラス"""
@@ -50,9 +50,20 @@ class Search:
 
 
     
+    def _route_list(route): #引数でリストを受け取る。
+        route_ = route[:]
+        row = []
+        box = route_
+        row.append(box) #リストの0番目（元の値）を格納
+        for node in xrange(len(route)-1): #リストを一回転する。
+           row.append(box) #リストのnode+1番目の初期化
+           row[node+1] = row[node][:] #初期化したものを、前のリストのコピーに置き換える。
+           row[node+1].append(row[node][0])
+           row[node+1].pop(0)
+
+        return row
 
 
-    
     def get_other_index(self, data, num):
         """引数1:逆の値を取得したい対象のリスト(1次元で) 引数2:引数1のリストの現在使っている値"""
         
@@ -64,8 +75,8 @@ class Search:
         
 
 
-    #メモ化
-    @lru_cache(maxsize=1000)
+
+
     def make_piece_collection(self, piece_num):
 
         len_piece = len(self.pieces.length[piece_num])
@@ -91,7 +102,7 @@ class Search:
 
     
 
-    
+
     def bfs(self):
         """幅優先探索"""
 
@@ -114,7 +125,6 @@ class Search:
             #rootをプッシュ
             self.queue.put(root_tmp)
                   
-       
 
         while self.queue.empty() == False:
             #queueからpop
@@ -159,7 +169,7 @@ class Search:
         return Finish_Node
 
 
-
+        
     def _get_children(self, parent):
         """探索対象は単ピース"""
 
