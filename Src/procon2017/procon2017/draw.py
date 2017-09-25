@@ -10,5 +10,5 @@ class Draw:
             print("piece:" + str(now_node.piece_n) + " next_edge:" + str(now_node.next_edge_n) + " prev_edge:" + str(now_node.prev_edge_n))
             now_node = now_node.prev
             
-
         #ここに描画の関数を書く
+
