@@ -36,6 +36,9 @@ class State:
         self.this_length = []
         self.this_angle = []
 
+        #このピースの座標
+        self.coordinates = []
+
         #評価値
         self.point = 0
 

@@ -66,14 +66,17 @@ class Search:
        
         ###########人力で木を組む################
         #rootのインスタンス
-        self.root_tmp = State(0,-1,2,total)
+        self.root_tmp = State(0,-1,1,total)
         self.root_tmp.prev = self.root
+        self.root_tmp.coordinates.extend([[250, 60], [230, 100], [270, 100]])
 
-        self.PIECE2 = State(2,1,3,total)
-        self.PIECE2.prev = self.root_tmp
+        self.PIECE1 = State(1,0,2,total)
+        self.PIECE1.prev = self.root_tmp
+        self.PIECE1.coordinates.extend([[230, 160], [250, 200], [270, 160]])
 
-        self.PIECE1 = State(1,2,-1,total)
-        self.PIECE1.prev = self.PIECE2
+        self.PIECE2 = State(2,1,-1,total)
+        self.PIECE2.prev = self.PIECE2
+        self.PIECE2.coordinates.extend([[300, 60], [320, 100], [340, 60]])
         
         #ここで探索そしてreturn
 
