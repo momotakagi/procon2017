@@ -26,7 +26,7 @@ if __name__ == '__main__':
     print("\n\n THIS IS THE BEST POINT NODE")
     pt = fin_node[0]
     while pt.piece_n != -1:  
-         print("piece:" + str(pt.piece_n) + " next_edge" + str(pt.next_edge_n) + " prev_edge" + str(pt.prev_edge_n))
+         print("piece:" + str(pt.piece_n) + " next_edge" + str(pt.next_edge_n) + " prev_edge" + str(pt.prev_edge_n) + " prev_total_edge" + str(pt.prev_total_edge) + " Is_reverse=" + str(pt.Is_reverse))
          pt = pt.prev
 
     print("\n_________________________________________________________")
