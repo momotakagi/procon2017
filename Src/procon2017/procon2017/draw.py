@@ -11,6 +11,6 @@ class draw:
         global total
         total = pieces.total_piece_num
 
-
+        
 
 

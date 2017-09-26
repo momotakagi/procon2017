@@ -33,4 +33,4 @@ if __name__ == '__main__':
     print ("elapsed_time:{0}".format(time.time() - start) + "[sec]")
    
     
-    #draw = draw(Pieces, polygon)
+    draw = draw(Pieces, polygon, fin_node)
