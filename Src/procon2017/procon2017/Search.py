@@ -75,12 +75,12 @@ class Search:
         self.PIECE1.coordinates.extend([[230, 160], [250, 200], [270, 160]])
 
         self.PIECE2 = State(2,1,-1,total)
-        self.PIECE2.prev = self.PIECE2
+        self.PIECE2.prev = self.PIECE1
         self.PIECE2.coordinates.extend([[300, 60], [320, 100], [340, 60]])
         
         #ここで探索そしてreturn
 
-        children = self.PIECE1
+        children = self.PIECE2
 
         return children
             

@@ -6,11 +6,11 @@ class Draw:
 
 
     def __init__(self, child, pieces):
-        img = np.zeros((512, 512, 3), np.unit8)
+        img = np.zeros((512, 512, 3), np.uint8)
         print("test")
         #例
         now_node = child
-        for i in range(3):
+        for i in range(4):
             print("piece:" + str(now_node.piece_n) + " next_edge:" + str(now_node.next_edge_n) + " prev_edge:" + str(now_node.prev_edge_n) + str(now_node.coordinates))
             
         #ここに描画の関数を書く
@@ -22,5 +22,7 @@ class Draw:
             cv2.destroyAllWindows
 
             now_node = now_node.prev
+
+
  
 
