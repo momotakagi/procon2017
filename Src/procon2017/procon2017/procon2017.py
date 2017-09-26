@@ -4,6 +4,7 @@ import Store
 from module import Data #こんな書き方もできる
 from Search import Search
 import time
+from draw import draw
 
 if __name__ == '__main__':
 
