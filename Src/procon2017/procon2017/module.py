@@ -41,8 +41,10 @@ class State:
         
 
         #表裏判定
-        self.Is_reverse = True
+        self.Is_reverse = False
 
+        #前までの辺の数
+        self.prev_total_edge = []
 
         #評価値
         self.point = 0

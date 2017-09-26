@@ -136,13 +136,12 @@ class Search:
                             edge_num = edge_num + 1
                     child.total_edge = edge_num
 
-                    print("\nUsed all pieces total_edge is " + str(child.total_edge) +" point = " + str(child.point))
-
-
+                    
                     ##################!!!!DEBUG!!!!#################
+                    print("\nUsed all pieces total_edge is " + str(child.total_edge) +" point = " + str(child.point))
                     pt = child
                     while pt.piece_n != -1:                          
-                        print("piece:" + str(pt.piece_n) + " next_edge" + str(pt.next_edge_n) + " prev_edge" + str(pt.prev_edge_n))
+                        print("piece:" + str(pt.piece_n) + " next_edge" + str(pt.next_edge_n) + " prev_edge" + str(pt.prev_edge_n) + " prev_total_edge" + str(pt.prev_total_edge) + " Is_reverse=" + str(pt.Is_reverse))
                         pt = pt.prev
                     ###############################################
 
@@ -162,6 +161,29 @@ class Search:
         return Finish_Node
 
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def _get_children(self, parent):
         """探索対象は単ピース"""
 
@@ -195,10 +217,10 @@ class Search:
 
                         if double == 0:
                             double2 = 1
-                            is_reverse = True
+                            is_reverse = False
                         else:
                             double2 = 0
-                            is_reverse = False
+                            is_reverse = True
 
                         tmp_angle2 = second_angle + tmp_main_angle[tmp_main_length[j][double2]][2]
 
@@ -215,6 +237,8 @@ class Search:
                             child.used_piece = copy.deepcopy(parent.used_piece)
                             child.used_piece.remove(i)       
                             child.Is_reverse = is_reverse
+                            child.prev_total_edge = copy.deepcopy(parent.prev_total_edge)
+                            child.prev_total_edge.append(len(parent.this_main_angle))
                             child.this_main_angle = copy.deepcopy(parent.this_main_angle)
                             child.this_main_length = copy.deepcopy(parent.this_main_length)
                             child.this_main_angle.extend(copy.deepcopy(tmp_main_angle))
