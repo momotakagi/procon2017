@@ -13,7 +13,7 @@ if __name__ == '__main__':
     cnts, all_pixel = Store.colormask(im)
 
     #ここでデータ格納
-    Store.approx_point(cnts, im, Pieces, all_pixel)
+    polygon = Store.approx_point(cnts, im, Pieces, all_pixel)
 
 
     
@@ -33,4 +33,4 @@ if __name__ == '__main__':
     print ("elapsed_time:{0}".format(time.time() - start) + "[sec]")
    
     
-    #draw = draw(Pieces)
+    #draw = draw(Pieces, polygon)

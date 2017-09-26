@@ -283,6 +283,9 @@ def approx_point(contours, im, Pieces, all_pixel):
     Pieces.angle = [sorted_list[j]["angle"] for j in range(len(polygon))]
     Pieces.pixels = all_pixel
     Pieces.total_piece_num = len(polygon)
+
+
+    return polygon
     
 
 

@@ -12,3 +12,5 @@ class draw:
         total = pieces.total_piece_num
 
 
+
+
