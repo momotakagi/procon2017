@@ -4,6 +4,7 @@ import Store
 from module import Data #こんな書き方もできる
 from Search import Search
 import time
+from draw import draw
 
 if __name__ == '__main__':
 
@@ -38,4 +39,4 @@ if __name__ == '__main__':
     print ("elapsed_time:{0}".format(time.time() - start) + "[sec]")
    
     
-    #draw = draw(Pieces, polygon)
+    draw = draw(Pieces, polygon, fin_node)
