@@ -56,6 +56,9 @@ class State:
         self.prev = object
         #次のTree
         #self.next = []
+
+
+        self.corr_edge = []
         
         
 

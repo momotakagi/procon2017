@@ -12,6 +12,11 @@ if __name__ == '__main__':
     im = Store.get_im()
     cnts, all_pixel = Store.colormask(im)
 
+    #枠を取得
+    #waku = Store.get_waku()
+    #cnts_waku, all_pixe_waku = Store.colormask(waku)
+
+
     #ここでデータ格納
     polygon = Store.approx_point(cnts, im, Pieces, all_pixel)
 

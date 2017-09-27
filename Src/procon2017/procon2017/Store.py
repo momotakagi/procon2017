@@ -27,6 +27,11 @@ def get_im():
     im = half_size(src)
     return im
 
+def get_waku():
+    src = cv2.imread('waku.jpg', cv2.IMREAD_COLOR)
+    im = half_size(src)
+    return im
+
 
 def half_size(im):
     hight = im.shape[0]
