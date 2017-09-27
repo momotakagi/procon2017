@@ -17,7 +17,7 @@ class draw:
         now_node = fin_node[0]
         total_edge = now_node.prev_total_edge
 
-        for (i) in range(len(polygon)):
+        for (i) in range(len(polygon)-1):
             piece_n = now_node.piece_n
             x = polygon[piece_n][now_node.prev_edge_n]
 
