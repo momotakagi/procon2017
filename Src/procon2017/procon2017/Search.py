@@ -41,9 +41,11 @@ class Search:
     total = int
 
     #コンストラクタ
-    def __init__(self, pieces):
+    def __init__(self, pieces, waku_data):
         self.queue = queue.Queue()
         self.pieces = pieces
+        self.waku_data = waku_data
+
         global __LENGTH_DELTA
         global __ANGLE_DELTA
         global __POINT180
@@ -161,8 +163,11 @@ class Search:
 
             print("Get Child fin")
         #辺を評価順にソート
-        Finish_Node = sorted(Finish_Node, key=lambda x: x.total_edge)
+        #Finish_Node = sorted(Finish_Node, key=lambda x: x.total_edge)
+        Finish_Node = self.Sort_by_waku_data(Finish_Node)
         print("FINISH OF BFS")  
+
+
 
         return Finish_Node
 
@@ -767,3 +772,48 @@ class Search:
                     #完成品として出力
 
 
+
+
+
+    def Sort_by_waku_data(self, fin_node):
+       
+       
+
+        #すべての角度を反転
+        Angles = [360-x for x in self.waku_data.angle[0]]
+
+        dic_fin_node = []
+
+        for (index, node) in enumerate(fin_node):
+            #角度を取り出す
+            length_1dg = []
+            tmp_angles = []
+            matched_list = []
+
+            length_1dg = [flatten for inner in node.this_main_length for flatten in inner]
+            for i in range(len(node.this_main_angle)):
+                if i in length_1dg:
+                    tmp_angles.append(node.this_main_angle[i][2])
+
+            
+            
+            matched_list = []
+            for j in reversed(range(len((Angles)))):
+                for k in reversed(range(len((tmp_angles)))):
+                    if abs(Angles[j] - tmp_angles[k]) < __ANGLE_DELTA:
+                        matched_list.append(tmp_angles[k])
+                        del tmp_angles[k]
+                        break
+
+
+                
+
+            print(matched_list)
+
+            dic_fin_node.append({"node":node, "match_len":len(matched_list),"total_edge":node.total_edge})
+
+
+        dic_fin_node = sorted(dic_fin_node, key=lambda x:x["total_edge"])
+        dic_fin_node = sorted(dic_fin_node, key=lambda x:x["match_len"])
+
+        return [dic_fin_node[j]["node"] for j in range(len(dic_fin_node))]
