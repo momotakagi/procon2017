@@ -64,7 +64,7 @@ class Search:
 
 
 
-
+    
     def get_other_index(self, data, num):
         """引数1:逆の値を取得したい対象のリスト(1次元で) 引数2:引数1のリストの現在使っている値"""
         
@@ -194,7 +194,7 @@ class Search:
 
 
 
-    @jit
+    
     def _get_children(self, parent):
         """探索対象は単ピース"""
 
