@@ -21,7 +21,7 @@ import copy
 from module import State
 from module import Data
 from functools import lru_cache
-
+from numba import jit
 
 
 
@@ -103,7 +103,7 @@ class Search:
 
     
 
-
+    
     def bfs(self):
         """幅優先探索"""
 
@@ -194,7 +194,7 @@ class Search:
 
 
 
-
+    @jit
     def _get_children(self, parent):
         """探索対象は単ピース"""
 
