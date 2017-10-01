@@ -45,6 +45,8 @@ class Search:
         self.queue = queue.Queue()
         self.pieces = pieces
         self.waku_data = waku_data
+        self.count = 0
+
 
         global __LENGTH_DELTA
         global __ANGLE_DELTA
@@ -168,7 +170,7 @@ class Search:
         print("FINISH OF BFS")  
 
 
-
+        print(self.count)
         return Finish_Node
 
     
@@ -236,7 +238,7 @@ class Search:
                         tmp_angle2 = second_angle + tmp_main_angle[tmp_main_length[j][double2]][2]
 
                        
-
+                        self.count += 1
 
                         if (tmp_angle1 < 360 + __ANGLE_DELTA) and (tmp_angle2 < 360 + __ANGLE_DELTA) :
                             #角度と長さの条件を満した   
