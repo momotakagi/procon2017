@@ -16,6 +16,7 @@
 
 
 
+
 import queue
 import copy
 from module import State
@@ -67,7 +68,8 @@ class Search:
 
 
 
-    
+    #lambdaで表現すると
+    #(lambda data, num: data[1] if data.index(num) == 0 else data[0])(b, 1)
     def get_other_index(self, data, num):
         """引数1:逆の値を取得したい対象のリスト(1次元で) 引数2:引数1のリストの現在使っている値"""
         
@@ -217,7 +219,7 @@ class Search:
                     self.queue.put(child)
 
 
-            print("Get Child fin")
+           
         #辺を評価順にソート
         #Finish_Node = sorted(Finish_Node, key=lambda x: x.total_edge)
         Finish_Node = self.Sort_by_waku_data(Finish_Node)
@@ -284,17 +286,17 @@ class Search:
 
 
         dict_length = self.search_length(parent.used_piece, base_length)
-
-        for tmp in dict_length:
-            i = tmp["i"]
-            j = tmp["j"]
-
-
-            #ピースを新しいデータ型にする
-            tmp_main_angle, tmp_main_length = self.make_piece_collection(i)
+        for double in range(2):
+            for tmp in dict_length:
+                i = tmp["i"]
+                j = tmp["j"]
 
 
-            for double in range(2):
+                #ピースを新しいデータ型にする
+                tmp_main_angle, tmp_main_length = self.make_piece_collection(i)
+
+
+            
                 #対象となる角度と足し算
                 tmp_angle1 = first_angle + tmp_main_angle[tmp_main_length[j][double]][2]
 
@@ -313,8 +315,6 @@ class Search:
                 if (tmp_angle1 < 360 + __ANGLE_DELTA) and (tmp_angle2 < 360 + __ANGLE_DELTA) :
                     #角度と長さの条件を満した   
 
-                    print("_____________________")
-                    print("piece:"+ str(i) + " edge" + str(j) + "↓") 
                             
 
                     #格納先となる子供ノードを作成
@@ -397,12 +397,12 @@ class Search:
 
 
 
-                        print("180 angle1")
+                        
 
                                  
                                
                     elif abs(tmp_angle1 - 360) < __ANGLE_DELTA:
-                        print("360 angle 1")
+                        
 
                         ###360を獲得したのでポイント給付
                         child.point += __POINT360
@@ -584,7 +584,7 @@ class Search:
 
                         child.this_main_angle[f_index][parent.this_main_angle[f_index].index(parent.next_edge_n)] = _tmp_other + _old_len
 
-                        print("通常 angle1")
+                        
 
 
 
@@ -625,12 +625,12 @@ class Search:
                         child.this_main_length[_tmp_other + _old_len][0] = -1
                         child.this_main_length[_tmp_other + _old_len][1] = -1
 
-                        print("180 angle2")
+                        
 
                                  
                                
                     elif abs(tmp_angle2 - 360) < __ANGLE_DELTA:
-                        print("360 angle2")
+                        
 
                         ###360を獲得したのでポイント給付
                         child.point += __POINT360
@@ -706,7 +706,7 @@ class Search:
 
                                 elif abs((next_tmp_ang + next_base_ang) - 360) < __LENGTH_DELTA:
                                     roop_flag = True
-                                    print("360だったので次に移行します")
+                                    print("360だったので次に移行します2")
 
                                     ###360を獲得したのでポイント給付
                                     child.point += __POINT360
@@ -808,7 +808,7 @@ class Search:
 
                         child.this_main_angle[s_index][parent.this_main_angle[s_index].index(parent.next_edge_n)] = _tmp_other + _old_len
 
-                        print("通常 angle2")
+                        
 
 
                     #辺ｍainのぶつかっている辺を削除
@@ -880,7 +880,7 @@ class Search:
 
                 
 
-            print(matched_list)
+          
 
             dic_fin_node.append({"node":node, "match_len":len(matched_list),"total_edge":node.total_edge})
 
