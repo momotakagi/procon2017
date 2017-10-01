@@ -15,13 +15,13 @@ if __name__ == '__main__':
 
     #枠を取得
     Waku_data = Data()
-    waku_im = Store.get_im('waku.jpg')
-    cnts_waku, all_pixe_waku = Store.colormask_waku(waku_im)
+    #waku_im = Store.get_im('waku.jpg')
+    #cnts_waku, all_pixe_waku = Store.colormask_waku(waku_im)
 
 
     #ここでデータ格納
     polygon = Store.approx_point(cnts, im, Pieces, all_pixel)
-    _ = Store.approx_point(cnts_waku, waku_im, Waku_data, all_pixe_waku)
+    #_ = Store.approx_point(cnts_waku, waku_im, Waku_data, all_pixe_waku)
     
 
     

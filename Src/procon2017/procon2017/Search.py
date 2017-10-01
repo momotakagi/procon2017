@@ -47,7 +47,7 @@ class Search:
         self.waku_data = waku_data
         self.tmp_sorted_length = []
         self.tmp_sorted_length_index = []
-
+        self.count = 0
 
         global __LENGTH_DELTA
         global __ANGLE_DELTA
@@ -118,7 +118,7 @@ class Search:
             sorted_list = sorted(tmp_list, key=lambda x:x["length"])  
             self.tmp_sorted_length.append(sorted_list)
 
-
+        
         #used_pieceのindexを探す
         index = self.tmp_sorted_length_index.index(used_piece)
 
@@ -301,7 +301,7 @@ class Search:
                 tmp_angle2 = second_angle + tmp_main_angle[tmp_main_length[j][double2]][2]
 
                        
-
+                self.count += 1
 
                 if (tmp_angle1 < 360 + __ANGLE_DELTA) and (tmp_angle2 < 360 + __ANGLE_DELTA) :
                     #角度と長さの条件を満した   
