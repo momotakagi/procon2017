@@ -102,7 +102,7 @@ class Search:
 
         return (main_angle, main_length)
 
-
+    
     def search_length(self, used_piece, base_length):
 
         if used_piece not in self.tmp_sorted_length_index:
@@ -122,7 +122,7 @@ class Search:
         #used_pieceのindexを探す
         index = self.tmp_sorted_length_index.index(used_piece)
 
-        this_list = copy.deepcopy(self.tmp_sorted_length[index])
+        this_list = self.tmp_sorted_length[index]
         all_len = [this_list[j]["length"] for j in range(len(this_list))]
         pivot = bisect.bisect(all_len, base_length)
         
