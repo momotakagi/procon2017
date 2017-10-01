@@ -133,17 +133,19 @@ class Search:
         piv_down = pivot - 1
 
         # indexが上がっていく方
-        while abs(base_length - all_len[piv_up]) < __LENGTH_DELTA:
-            OkListIndex.append(piv_up)
-            piv_up += 1
-            if piv_up == len(all_len):
-                break
+        if piv_up != len(all_len):
+            while abs(base_length - all_len[piv_up]) < __LENGTH_DELTA:
+                OkListIndex.append(piv_up)
+                piv_up += 1
+                if piv_up == len(all_len):
+                    break
           
         # indexが下がっていく方    
         while abs(base_length - all_len[piv_down]) < __LENGTH_DELTA:
             OkListIndex.append(piv_down)
             piv_down -= 1
-
+            if piv_down == -1:
+                    break
 
 
         return [this_list[z] for z in OkListIndex]
@@ -279,14 +281,13 @@ class Search:
         for tmp in dict_length:
             i = tmp["i"]
             j = tmp["j"]
-            tmp_len = tmp["length"]
+
 
             #ピースを新しいデータ型にする
             tmp_main_angle, tmp_main_length = self.make_piece_collection(i)
 
 
-            #####長さ＆角度条件を満たす#####
-            if abs(tmp_len - base_length) < __LENGTH_DELTA:
+            for double in range(2):
                 #対象となる角度と足し算
                 tmp_angle1 = first_angle + tmp_main_angle[tmp_main_length[j][double]][2]
 
