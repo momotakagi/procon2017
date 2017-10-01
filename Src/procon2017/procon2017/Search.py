@@ -102,6 +102,10 @@ class Search:
 
         return (main_angle, main_length)
 
+
+
+
+
     
     def search_length(self, used_piece, base_length):
 
@@ -149,6 +153,9 @@ class Search:
 
 
         return [this_list[z] for z in OkListIndex]
+
+
+
 
 
 
@@ -217,7 +224,7 @@ class Search:
         print("FINISH OF BFS")  
 
 
-
+        print(self.count)
         return Finish_Node
 
     
