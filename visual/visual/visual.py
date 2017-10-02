@@ -18,7 +18,7 @@ img = cv2.circle(img,(447,63), 63, (0,0,255), -1)
 
 img = cv2.ellipse(img,(256,256),(100,50),0,0,180,255,-1)
 
-pts = np.array([[10,5],[20,30],[70,20],[50,10]], np.int32)
+pts = np.array([[10,5],[20,30],[70,20]], np.int32)
 pts = pts.reshape((-1,1,2))
 img = cv2.polylines(img,[pts],True,(0,255,255))
 

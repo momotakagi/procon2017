@@ -19,13 +19,16 @@ def cul_angle(x, y):
     rad = np.arccos(cos)
     theta = rad * 180 / np.pi
 
+    theta = round(theta,1)
     return theta
 
 
-def get_im():
-    src = cv2.imread('test.jpg', cv2.IMREAD_COLOR)
+def get_im(file_name):
+    src = cv2.imread(file_name, cv2.IMREAD_COLOR)
     im = half_size(src)
     return im
+
+
 
 
 def half_size(im):
@@ -42,7 +45,7 @@ def get_distance(x, y):
     y2 = y[0,1]
 
     d = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-    d = round(d)
+    d = round(d,1)
     return d
 
 
@@ -104,8 +107,7 @@ def colormask(im):
     #img_color = cv2.bitwise_and(im, im, mask=img_mask)
 
     show_im(img_mask, "colormask")
-    
-    #how_im(img_mask, "gaussian")
+
     image, contours, hierarchy = cv2.findContours(img_mask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
     contours.sort(key=cv2.contourArea, reverse=True)
 
@@ -130,6 +132,57 @@ def colormask(im):
     return (contours, pixelpoints)
     
 
+
+def colormask_waku(im):
+
+
+
+    #im = cv2.GaussianBlur(im,(5,5),0)
+
+    # フレームをHSVに変換
+    hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+
+
+    # 取得する色の範囲を指定する
+    lower_piece = np.array([0, 25, 50])
+    upper_piece = np.array([50, 255, 255])
+
+    #指定した色に基づいてマスクの作成
+    img_mask = cv2.inRange(hsv, lower_piece, upper_piece)
+
+    
+
+    #マスクと元画像の共通の領域を抽出
+    #img_color = cv2.bitwise_and(im, im, mask=img_mask)
+
+    show_im(img_mask, "colormask")
+    
+    image, contours, hierarchy = cv2.findContours(img_mask,cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours.sort(key=cv2.contourArea, reverse=True)
+
+
+    for i in reversed(range(len(contours))):
+        if(cv2.contourArea(contours[i]) < 800):
+            del contours[i]
+    del contours[0]        
+    #filter(lambda x: x % 2 is 0, contours)
+
+
+    
+
+    #これらはとりあえずすべての近似
+    im_all= np.copy(im)
+    im_all = cv2.drawContours(im_all, contours, -1, (0,255,0), 3)
+    show_im(im_all, "findcountours waku")
+    #***************************************************#
+
+
+    #ピースの領域情報(角度の時使う)
+    pixelpoints = cv2.findNonZero(img_mask)
+
+
+    return (contours, pixelpoints)
+    
 
 
 
