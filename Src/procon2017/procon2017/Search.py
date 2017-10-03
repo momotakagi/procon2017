@@ -130,14 +130,14 @@ class Search:
 
         this_list = self.tmp_sorted_length[index]
         all_len = [this_list[j]["length"] for j in range(len(this_list))]
-        pivot = bisect.bisect(all_len, base_length)
+        pivot = bisect.bisect_left(all_len, base_length - __LENGTH_DELTA)
         
         OkListIndex = []
 
         #インデックスたち
         piv_up = pivot
-        piv_down = pivot - 1
-
+        #piv_down = pivot - 1
+        
         # indexが上がっていく方
         if piv_up != len(all_len):
             while abs(base_length - all_len[piv_up]) < __LENGTH_DELTA:
@@ -145,14 +145,15 @@ class Search:
                 piv_up += 1
                 if piv_up == len(all_len):
                     break
-          
+         
+        """
         # indexが下がっていく方    
         while abs(base_length - all_len[piv_down]) < __LENGTH_DELTA:
             OkListIndex.append(piv_down)
             piv_down -= 1
             if piv_down == -1:
                     break
-
+        """
 
         return [this_list[z] for z in OkListIndex]
 
