@@ -15,17 +15,18 @@ class draw:
         global total
         total = pieces.total_piece_num
 
+        #fin_nodeの葉から根へ向けて処理
         now_node = fin_node[0]
         total_edge = now_node.prev_total_edge
 
         for (i) in range(len(polygon)-1):
             piece_n = now_node.piece_n
             x = polygon[piece_n][now_node.prev_edge_n]
-            h = now_node.prev_edge_n##
             prev_edge_n = now_node.prev_edge_n + 1
             if prev_edge_n == len(polygon[piece_n]):
                     prev_edge_n = 0
 
+            #1つ上のノードへ
             now_node = now_node.prev
 
             if now_node.next_edge_n < total_edge[0]:
@@ -54,6 +55,7 @@ class draw:
                 y = polygon[1][next_edge_n]
                 y1 = polygon[1][now_node.next_edge_n - total_edge[0]]
 
+            #2つのピースを合わせる
             instance = y - x
             for (i, piece) in enumerate(polygon[piece_n]):
                 polygon[piece_n][i] += instance
@@ -69,16 +71,14 @@ class draw:
                 polygon[piece_n][i] -= instance
 
             for (i, piece) in enumerate(polygon[piece_n]):
-                # 元の行列
-                a = polygon[piece_n][i]
-                if i != h:
-                    # 回転による座標変換
-                    a = rotate(Ang, a)
+                # 回転による座標変換
+                polygon[piece_n][i] = rotate(Ang, polygon[piece_n][i])
 
             #もとに戻す
             for (i, piece) in enumerate(polygon[piece_n]):
                 polygon[piece_n][i] += instance
 
+        #表示
         for (i, piece) in enumerate(polygon):
             pts = np.array(polygon[i], np.int32)
             pts = pts.reshape((-1,1,2))
