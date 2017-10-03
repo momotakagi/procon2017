@@ -24,6 +24,9 @@
     <Compile Include="draw.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GA.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="module.py" />
     <Compile Include="Search.py">
       <SubType>Code</SubType>

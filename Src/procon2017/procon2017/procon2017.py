@@ -48,6 +48,8 @@ if __name__ == '__main__':
     #探索開始
     search = Search(Pieces, Waku_data)
 
+
+
     start = time.time()
     fin_node = search.bfs()
 

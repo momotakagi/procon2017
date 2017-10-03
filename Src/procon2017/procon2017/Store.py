@@ -45,6 +45,7 @@ def get_distance(x, y):
     y2 = y[0,1]
 
     d = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    d = d/9.5
     d = round(d,1)
     return d
 
