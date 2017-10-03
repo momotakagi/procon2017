@@ -214,7 +214,7 @@ def approx_point(contours, im, Pieces, all_pixel):
         approx = cv2.approxPolyDP(cnt,epsilon,False)
         approx = approx[0:-1]  #順番重複回避
         polygon.append(approx)
-
+        
 
         #iは添字そさせる
         #辺の長さを求める
