@@ -1,4 +1,4 @@
-# share house git 
+# GAがんばるぞ
 
 import Store 
 from module import Data #こんな書き方もできる
