@@ -9,9 +9,13 @@ class draw:
 
     #コンストラクタ
     def __init__(self, pieces, polygon, fin_node):
+
         img = np.zeros((1024, 1024, 3), np.uint8)
+        
         self.pieces = pieces
+        
         global total
+        
         total = pieces.total_piece_num
 
         now_node = fin_node[0]
@@ -29,12 +33,14 @@ class draw:
                 if next_edge_n == length:
                     next_edge_n = 0
                 y = polygon[0][next_edge_n] 
+
             elif now_node.next_edge_n >= total_edge[1]:
                 length = len(polygon[2])
                 next_edge_n = now_node.next_edge_n - total_edge[1] + 1
                 if next_edge_n == length:
                     next_edge_n = 0
-                y = polygon[2][next_edge_n] 
+                y = polygon[2][next_edge_n]
+                
             else:
                 length = len(polygon[1])
                 next_edge_n = now_node.next_edge_n - total_edge[0] + 1
