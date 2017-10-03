@@ -20,6 +20,7 @@ class draw:
         total_edge = now_node.prev_total_edge
 
         for (i) in range(len(polygon)-1):
+            #現在のノードの処理
             piece_n = now_node.piece_n
             x = polygon[piece_n][now_node.prev_edge_n]
             prev_edge_n = now_node.prev_edge_n + 1
@@ -27,7 +28,7 @@ class draw:
                     prev_edge_n = 0
 
             #1つ上のノードへ
-            now_node = now_node.prev
+            now_node = now_node.prev 
 
             if now_node.next_edge_n < total_edge[0]:
                 length = len(polygon[0])
