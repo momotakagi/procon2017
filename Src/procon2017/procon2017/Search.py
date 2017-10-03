@@ -816,6 +816,6 @@ class Search:
 
 
         dic_fin_node = sorted(dic_fin_node, key=lambda x:x["total_edge"])
-        dic_fin_node = sorted(dic_fin_node, key=lambda x:-x["match_len"])
+      #  dic_fin_node = sorted(dic_fin_node, key=lambda x:-x["match_len"])
 
         return [dic_fin_node[j]["node"] for j in range(len(dic_fin_node))]
