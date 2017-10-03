@@ -122,7 +122,7 @@ def colormask(im):
     im_all= np.copy(im)
     im_all = cv2.drawContours(im_all, contours, -1, (0,255,0), 3)
     show_im(im_all, "findcountours")
-    #***************************************************#
+    #***************************************************
 
 
     #ピースの領域情報(角度の時使う)
