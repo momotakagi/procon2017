@@ -15,13 +15,13 @@ if __name__ == '__main__':
 
     #枠を取得
     Waku_data = Data()
-    waku_im = Store.get_im('waku.jpg')
-    cnts_waku, all_pixe_waku = Store.colormask_waku(waku_im)
+    #waku_im = Store.get_im('waku.jpg')
+    #cnts_waku, all_pixe_waku = Store.colormask_waku(waku_im)
 
 
     #ここでデータ格納
     polygon = Store.approx_point(cnts, im, Pieces, all_pixel)
-    _ = Store.approx_point(cnts_waku, waku_im, Waku_data, all_pixe_waku)
+    #_ = Store.approx_point(cnts_waku, waku_im, Waku_data, all_pixe_waku)
     
 
     
@@ -36,6 +36,7 @@ if __name__ == '__main__':
     pt = fin_node[0]
     while pt.piece_n != -1:  
          print("piece:" + str(pt.piece_n) + " next_edge" + str(pt.next_edge_n) + " prev_edge" + str(pt.prev_edge_n) + " prev_total_edge" + str(pt.prev_total_edge) + " Is_reverse=" + str(pt.Is_reverse))
+         #print(pt.corr_edge)
          pt = pt.prev
 
     print("\n_________________________________________________________")
