@@ -11,10 +11,15 @@ class draw:
 
     #コンストラクタ
     def __init__(self, pieces, polygon, fin_node):
-        img = np.zeros((1024, 1024, 3), np.uint8)
+        img = np.zeros((768, 1366, 3), np.uint8)
         self.pieces = pieces
         global total
         total = pieces.total_piece_num
+
+        fontsize = 1
+        font = cv2.FONT_HERSHEY_PLAIN
+
+        center_g = []
 
         #fin_nodeの葉から根へ向けて処理
         now_node = fin_node[0]
@@ -29,7 +34,6 @@ class draw:
             now_node = root_list[root_n]
 
             #現在のノードの処理
-            #piece_n = now_node.piece_n
 
             for (i, piece) in enumerate(total_edge):
 
@@ -45,8 +49,6 @@ class draw:
                        next_edge_n = 0
                 
                     x = polygon[i][next_edge_n] 
-                    #print(polygon[i])
-                    #print(now_node.next_edge_n)
                     x1 = polygon[i][next_edge_n-1]
 
                     break
@@ -58,10 +60,9 @@ class draw:
                        next_edge_n = 0
                 
                     x = polygon[i+1][next_edge_n] 
-                    x1 = polygon[i][next_edge_n-1]
+                    x1 = polygon[i+1][next_edge_n-1]
 
             #1つ上のノードへ
-            #now_node = now_node.prev
             now_node = root_list[root_n-1]
             piece_n = now_node.piece_n
 
@@ -81,35 +82,39 @@ class draw:
             Ang = Store.cul_angle(VecA[0], VecB[0])
 
             #外積の計算
-
-            #print(Ang)
+            direction = np.cross(VecA, VecB)
 
             #軸を(0,0)に平行移動
             pivot = copy.deepcopy(polygon[piece_n][prev_edge_n-1])
             for (i, piece) in enumerate(polygon[piece_n]):
                 polygon[piece_n][i] -= pivot
 
-            #print(polygon[3])
-
             for (i, piece) in enumerate(polygon[piece_n]):
                 # 回転による座標変換
-                polygon[piece_n][i] = rotate(-Ang, polygon[piece_n][i])
-
-            #print(polygon[3])
+                if direction > 0:
+                    polygon[piece_n][i] = rotate(-Ang, polygon[piece_n][i])
+                else:
+                    polygon[piece_n][i] = rotate(Ang, polygon[piece_n][i])
 
             #もとに戻す
-            for (i, piece) in enumerate(polygon[piece_n]):
+            for (i) in range(len(polygon[piece_n])):
                 polygon[piece_n][i] += pivot
 
+        #重心計算
+        for (i, cnt) in enumerate(polygon):
+            M = cv2.moments(cnt)
+            cx = int(M['m10']/M['m00']/2)
+            cy = int(M['m01']/M['m00']/2)
+            center_g.append((cx,cy))
+
         #表示
-        fontsize = 1
-        font = cv2.FONT_HERSHEY_PLAIN
-        for (i, piece) in enumerate(polygon):
+        for (i) in range(len(polygon)):
+            for(j, piece) in enumerate(polygon[i]):
+                polygon[i][j] = piece / 2
             pts = np.array(polygon[i], np.int32)
             pts = pts.reshape((-1,1,2))
             img = cv2.polylines(img,[pts],True,(0,255,255))
-            #重心を描画(文字)
-            cv2.putText(img,"piece:" + str(i), pieces.Center_G[i], font, fontsize,(0,0,0))
+            cv2.putText(img, str(i), center_g[i], font, fontsize, (255, 255, 255), 2, cv2.LINE_AA)
             cv2.imshow('image', img)
             cv2.waitKey(0)          
             cv2.destroyAllWindows
