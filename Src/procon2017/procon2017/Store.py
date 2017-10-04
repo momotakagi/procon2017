@@ -12,6 +12,9 @@ from matplotlib import pyplot as plt
 
 def cul_angle(x, y):
 
+    if x[0] == y[0] and x[1] == y[1]:
+        return 0
+
     dot_xy = np.dot(x, y)
     norm_x = np.linalg.norm(x)
     norm_y = np.linalg.norm(y)
@@ -122,7 +125,7 @@ def colormask(im):
     im_all= np.copy(im)
     im_all = cv2.drawContours(im_all, contours, -1, (0,255,0), 3)
     show_im(im_all, "findcountours")
-    #***************************************************#
+    #***************************************************
 
 
     #ピースの領域情報(角度の時使う)

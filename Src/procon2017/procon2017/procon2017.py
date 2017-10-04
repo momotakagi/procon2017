@@ -9,19 +9,39 @@ from draw import draw
 if __name__ == '__main__':
 
     #変数シリーズ
-    Pieces = Data()  #ピースのDBクラス
-    im = Store.get_im('test.jpg')
-    cnts, all_pixel = Store.colormask(im)
+    Pieces1 = Data()  #ピースのDBクラス
+    im1 = Store.get_im('1.jpg')
+    cnts1, all_pixel1 = Store.colormask(im1)
+
+
+    Pieces2 = Data()  #ピースのDBクラス
+    im2 = Store.get_im('2.jpg')
+    cnts2, all_pixel2 = Store.colormask(im2)
+
+    Pieces3 = Data()  #ピースのDBクラス
+    im3 = Store.get_im('3.jpg')
+    cnts3, all_pixel3 = Store.colormask(im3)
+
+    #ここでデータ格納
+    polygon1 = Store.approx_point(cnts1, im1, Pieces1, all_pixel1)
+    polygon2 = Store.approx_point(cnts2, im2, Pieces2, all_pixel2)
+    polygon3 = Store.approx_point(cnts3, im3, Pieces3, all_pixel3)
+
+    Pieces = Data()
+    Pieces.angle = Pieces1.angle + Pieces2.angle + Pieces3.angle
+    Pieces.Center_G = Pieces1.Center_G + Pieces2.Center_G + Pieces3.Center_G
+    Pieces.length = Pieces1.length + Pieces2.length + Pieces3.length
+    Pieces.polygon = Pieces1.polygon + Pieces2.polygon + Pieces3.polygon
+    Pieces.total_piece_num = Pieces1.total_piece_num + Pieces2.total_piece_num + Pieces3.total_piece_num
+
 
     #枠を取得
     Waku_data = Data()
     waku_im = Store.get_im('waku.jpg')
     cnts_waku, all_pixe_waku = Store.colormask_waku(waku_im)
-
-
-    #ここでデータ格納
-    polygon = Store.approx_point(cnts, im, Pieces, all_pixel)
     _ = Store.approx_point(cnts_waku, waku_im, Waku_data, all_pixe_waku)
+
+    
     
 
     
@@ -43,4 +63,4 @@ if __name__ == '__main__':
    
 
 
-    draw = draw(Pieces, polygon, fin_node)
+    draw = draw(Pieces, Pieces.polygon, fin_node)
