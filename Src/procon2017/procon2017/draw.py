@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import Store 
+import copy
 
 class draw:
     """description of class"""
@@ -10,98 +11,135 @@ class draw:
 
     #コンストラクタ
     def __init__(self, pieces, polygon, fin_node):
-        img = np.zeros((1024, 1024, 3), np.uint8)
+        img = np.zeros((768, 1366, 3), np.uint8)
         self.pieces = pieces
         global total
         total = pieces.total_piece_num
 
+        fontsize = 1
+        font = cv2.FONT_HERSHEY_PLAIN
+
+        center_g = []
+
+        #fin_nodeの葉から根へ向けて処理
         now_node = fin_node[0]
         total_edge = now_node.prev_total_edge
-
+        root_list = [now_node]
         for (i) in range(len(polygon)-1):
+            now_node = now_node.prev
+            root_list.append(now_node)
+
+        for (i) in range(len(polygon)-1):#len(polygon)-1
+            root_n = len(root_list)-1-i
+            now_node = root_list[root_n]
+
+            #現在のノードの処理
+
+            for (i, piece) in enumerate(total_edge):
+
+                if now_node.next_edge_n < total_edge[i]:
+                    length = len(polygon[i])
+
+                    if i == 0:
+                        next_edge_n = now_node.next_edge_n + 1
+                    else:
+                        next_edge_n = now_node.next_edge_n - total_edge[i-1] + 1
+                    
+                    if next_edge_n == length:
+                       next_edge_n = 0
+                
+                    x = polygon[i][next_edge_n] 
+                    x1 = polygon[i][next_edge_n-1]
+
+                    break
+
+                elif i == len(total_edge)-1:
+                    next_edge_n = now_node.next_edge_n - total_edge[i] + 1
+
+                    if next_edge_n == length:
+                       next_edge_n = 0
+                
+                    x = polygon[i+1][next_edge_n] 
+                    x1 = polygon[i+1][next_edge_n-1]
+
+            #1つ上のノードへ
+            now_node = root_list[root_n-1]
             piece_n = now_node.piece_n
-            x = polygon[piece_n][now_node.prev_edge_n]
-            h = now_node.prev_edge_n##
+
+            y = copy.deepcopy(polygon[piece_n][now_node.prev_edge_n])
             prev_edge_n = now_node.prev_edge_n + 1
             if prev_edge_n == len(polygon[piece_n]):
                     prev_edge_n = 0
 
-            now_node = now_node.prev
-
-            if now_node.next_edge_n < total_edge[0]:
-                length = len(polygon[0])
-                next_edge_n = now_node.next_edge_n + 1
-                
-                if next_edge_n == length:
-                   next_edge_n = 0
-                
-                y = polygon[0][next_edge_n]
-                
-                y1 = polygon[0][now_node.next_edge_n]
-            
-            elif now_node.next_edge_n >= total_edge[1]:
-                length = len(polygon[2])
-                next_edge_n = now_node.next_edge_n - total_edge[1] + 1
-                if next_edge_n == length:
-                    next_edge_n = 0
-                y = polygon[2][next_edge_n] 
-                y1 = polygon[2][now_node.next_edge_n - total_edge[1]]
-            else:
-                length = len(polygon[1])
-                next_edge_n = now_node.next_edge_n - total_edge[0] + 1
-                if next_edge_n == length:
-                    next_edge_n = 0
-                y = polygon[1][next_edge_n]
-                y1 = polygon[1][now_node.next_edge_n - total_edge[0]]
-
-            instance = y - x
+            #2つのピースを合わせる
+            instance = copy.deepcopy(x - y)
             for (i, piece) in enumerate(polygon[piece_n]):
                 polygon[piece_n][i] += instance
 
             #角度計算
-            VecA = y1 - y
-            VecB = polygon[piece_n][prev_edge_n] - y
+            VecA = x1 - x
+            VecB = polygon[piece_n][prev_edge_n] - x
+
+            print("VecA " + str(VecA))
+            print("VecB " + str(VecB))
+
             Ang = Store.cul_angle(VecA[0], VecB[0])
+            
+
+            #外積の計算
+            direction = np.cross(VecA, VecB)
 
             #軸を(0,0)に平行移動
-            instance = x - 0
+            pivot = copy.deepcopy(polygon[piece_n][prev_edge_n-1])
             for (i, piece) in enumerate(polygon[piece_n]):
-                polygon[piece_n][i] -= instance
+                polygon[piece_n][i] -= pivot
+
 
             for (i, piece) in enumerate(polygon[piece_n]):
-                # 元の行列
-                a = polygon[piece_n][i]
-                if i != h:
-                    # 回転による座標変換
-                    a = rotate(Ang, a)
+                # 回転による座標変換
+                if direction > 0:                 
+                    polygon[piece_n][i] = rotate(Ang * -1.0, polygon[piece_n][i])
+                else:
+                    polygon[piece_n][i] = rotate(Ang, polygon[piece_n][i])
 
             #もとに戻す
-            for (i, piece) in enumerate(polygon[piece_n]):
-                polygon[piece_n][i] += instance
+            for (i) in range(len(polygon[piece_n])):
+                polygon[piece_n][i] += pivot
 
-        for (i, piece) in enumerate(polygon):
+        #重心計算
+        for (i, cnt) in enumerate(polygon):
+            M = cv2.moments(cnt)
+            cx = int(M['m10']/M['m00']/2)
+            cy = int(M['m01']/M['m00']/2)
+            center_g.append((cx,cy))
+
+        #表示
+        for (i) in range(len(polygon)):
+            for(j, piece) in enumerate(polygon[i]):
+                polygon[i][j] = piece / 2
             pts = np.array(polygon[i], np.int32)
             pts = pts.reshape((-1,1,2))
             img = cv2.polylines(img,[pts],True,(0,255,255))
+            cv2.putText(img, str(i), center_g[i], font, fontsize, (255, 255, 255), 2, cv2.LINE_AA)
             cv2.imshow('image', img)
             cv2.waitKey(0)          
             cv2.destroyAllWindows
 
+
 def rotate(deg, matrix):
     # degreeをradianに変換
+    
     r = np.radians(deg)
     C = np.cos(r)
     S = np.sin(r)
     
+    x = copy.deepcopy(matrix[0][0])
+
+
+
     matrix[0][0] = matrix[0][0] * C - matrix[0][1] * S
-    matrix[0][1] = matrix[0][0] * S + matrix[0][1] * C
+    matrix[0][1] = x * S + matrix[0][1] * C
+
 
     return matrix
         
-        
-            
-
-        
-
-
-

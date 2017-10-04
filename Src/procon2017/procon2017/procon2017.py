@@ -63,4 +63,4 @@ if __name__ == '__main__':
    
 
 
-    draw = draw(Pieces, polygon, fin_node)
+    draw = draw(Pieces, Pieces.polygon, fin_node)

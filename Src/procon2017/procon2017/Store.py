@@ -12,6 +12,9 @@ from matplotlib import pyplot as plt
 
 def cul_angle(x, y):
 
+    if x[0] == y[0] and x[1] == y[1]:
+        return 0
+
     dot_xy = np.dot(x, y)
     norm_x = np.linalg.norm(x)
     norm_y = np.linalg.norm(y)

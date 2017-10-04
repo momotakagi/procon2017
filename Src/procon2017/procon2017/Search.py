@@ -69,7 +69,7 @@ class Search:
         __POINT360 = 130
         __POINT360_samelen = 45
         __POINT360_difflen = 1
-        __BEAM_WIDTH = 20
+        __BEAM_WIDTH = 100
 
 
     
@@ -264,6 +264,7 @@ class Search:
         #裏表考慮のため2回
         #iはピース番号_tmp_lenは長さ
         for double in range(1):
+            double = 1
             for i in parent.used_piece:
                 """子供を作成"""
 
