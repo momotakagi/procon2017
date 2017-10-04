@@ -51,7 +51,7 @@ class Search:
         self.deep = len(pieces.length) - 1
         self.deep_counter = 0
         self.deep_flag = 0
-        self.deep_th = 3
+        self.deep_th = 2
 
         global __LENGTH_DELTA
         global __ANGLE_DELTA
@@ -69,17 +69,21 @@ class Search:
         __POINT360 = 130
         __POINT360_samelen = 45
         __POINT360_difflen = 1
-        __BEAM_WIDTH = 50
+        __BEAM_WIDTH = 20
 
 
     
     def get_other_index(self, data, num):
         """引数1:逆の値を取得したい対象のリスト(1次元で) 引数2:引数1のリストの現在使っている値"""
-        
-        if data.index(num) == 0:
-            return data[1]
-        else:
-            return data[0]
+        try:
+            if data.index(num) == 0:
+                return data[1]
+            else:
+                return data[0]
+        except:
+            print(data)
+            print(num)
+            print("error in get other")
 
         
 
@@ -138,6 +142,8 @@ class Search:
 
         while self.queue.empty() == False:
             #queueからpop
+
+
             parent = self.queue.get()          
 
 
@@ -165,6 +171,10 @@ class Search:
 
                     self.deep_flag = 0
                     self.deep_th = 1
+
+                    print("total_Edge=" + str(sorted_list[0]["total_edge"]))
+
+
 
             children = self._get_children(parent)
             
@@ -202,10 +212,13 @@ class Search:
             print("Get Child fin" + str(self.queue.qsize()))
             
 
+
+
         Finish_Node = self.Sort_by_waku_data(Finish_Node)
         print("FINISH OF BFS")  
 
-
+        if Finish_Node == []:
+            Finish_Node.append(parent)
         return Finish_Node
 
     
@@ -250,7 +263,7 @@ class Search:
         
         #裏表考慮のため2回
         #iはピース番号_tmp_lenは長さ
-        for double in range(2):
+        for double in range(1):
             for i in parent.used_piece:
                 """子供を作成"""
 
@@ -444,17 +457,13 @@ class Search:
 
                                         elif abs((next_tmp_ang + next_base_ang) - 360) < __LENGTH_DELTA:
                                             roop_flag = True
-                                            print("360だったので次に移行します")
+                                            print("360だったので次に移行します1")
 
 
                                             ###360を獲得したのでポイント給付
                                             child.point += __POINT360
                                         
-                                            #今後使わない辺を-1する
-                                            child.this_main_length[_tmp_other + _old_len][0] = -1
-                                            child.this_main_length[_tmp_other + _old_len][1] = -1
-                                            child.this_main_length[_tmp_base_other][0] = -1
-                                            child.this_main_length[_tmp_base_other][1] = -1
+
 
 
 
@@ -530,7 +539,11 @@ class Search:
                                     _side_main =  parent.this_main_length[_tmp_base_other].index(self.get_other_index(child.this_main_length[_tmp_base_other], parent.this_main_length[_m_index][_side_main]))
                                     _m_index = _tmp_base_other
                                 
-                                    
+                                    #今後使わない辺を-1する
+                                    child.this_main_length[_tmp_other + _old_len][0] = -1
+                                    child.this_main_length[_tmp_other + _old_len][1] = -1
+                                    child.this_main_length[_tmp_base_other][0] = -1
+                                    child.this_main_length[_tmp_base_other][1] = -1
                                 
                                 
                     
@@ -669,16 +682,12 @@ class Search:
 
                                         elif abs((next_tmp_ang + next_base_ang) - 360) < __LENGTH_DELTA:
                                             roop_flag = True
-                                            print("360だったので次に移行します")
+                                            print("360だったので次に移行します2")
 
                                             ###360を獲得したのでポイント給付
                                             child.point += __POINT360
 
-                                            #今後使わない辺を-1する
-                                            child.this_main_length[_tmp_other + _old_len][0] = -1
-                                            child.this_main_length[_tmp_other + _old_len][1] = -1
-                                            child.this_main_length[_tmp_base_other][0] = -1
-                                            child.this_main_length[_tmp_base_other][1] = -1
+                                            
                                         
 
                                         else:
@@ -755,7 +764,11 @@ class Search:
                                     _m_index = _tmp_base_other
                                 
 
-
+                                    #今後使わない辺を-1する
+                                    child.this_main_length[_tmp_other + _old_len][0] = -1
+                                    child.this_main_length[_tmp_other + _old_len][1] = -1
+                                    child.this_main_length[_tmp_base_other][0] = -1
+                                    child.this_main_length[_tmp_base_other][1] = -1
                                 
 
                             else:
@@ -791,11 +804,18 @@ class Search:
                             if child.used_piece == []:
                                 rt_children.append(child)
                             else:
+                                
+                                count = 0
+                                for x in range(len(child.this_main_length)):
+                                    if child.this_main_length[x][0] != -1:
+                                        count += 1
+
                                 for x in range(len(child.this_main_length)):
                                     if child.this_main_length[x][0] != -1:
                                         tmp_child = copy.deepcopy(child)
-                                        tmp_child.next_edge_n = x    
-                                        rt_children.append(copy.deepcopy(tmp_child))
+                                        tmp_child.next_edge_n = x   
+                                        tmp_child.total_edge = count
+                                        rt_children.append(tmp_child)
 
                                                            
 
@@ -848,7 +868,9 @@ class Search:
             dic_fin_node.append({"node":node, "match_len":len(matched_list),"total_edge":node.total_edge})
 
 
-        dic_fin_node = sorted(dic_fin_node, key=lambda x:x["total_edge"])
-        dic_fin_node = sorted(dic_fin_node, key=lambda x:-x["match_len"])
+
+        dic_fin_node = sorted(dic_fin_node, key=lambda x:(x["total_edge"], -x["match_len"]))
+
+
 
         return [dic_fin_node[j]["node"] for j in range(len(dic_fin_node))]
