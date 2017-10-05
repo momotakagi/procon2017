@@ -66,8 +66,8 @@ class Search:
         __LENGTH_DELTA = 8
         __ANGLE_DELTA = 2
         __POINT180 = 100
-        __POINT360 = 130
-        __POINT360_samelen = 45
+        __POINT360 = 180
+        __POINT360_samelen = 300
         __POINT360_difflen = 1
         __BEAM_WIDTH = 30
 
