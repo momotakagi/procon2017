@@ -331,7 +331,7 @@ def approx_point(contours, im, Pieces, all_pixel):
 
 
     #データを格納
-    Pieces.polygon = [sorted_list[j]["polygon"] for j in range(len(polygon))]
+    Pieces.polygon = [sorted_list[j]["polygon"] for j in range(len(polygon))] 
     Pieces.Center_G = [sorted_list[j]["Center_G"] for j in range(len(polygon))]
     Pieces.length = [sorted_list[j]["length"] for j in range(len(polygon))]
     Pieces.angle = [sorted_list[j]["angle"] for j in range(len(polygon))]
