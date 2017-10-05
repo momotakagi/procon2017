@@ -21,9 +21,10 @@ class draw:
 
         center_g = []
 
-        #fin_nodeの葉から根へ向けて処理
+        total_piece_n=[]
+
+        #fin_nodeの根から処理
         now_node = fin_node[0]
-        total_edge = now_node.prev_total_edge
         root_list = [now_node]
         for (i) in range(len(polygon)-1):
             now_node = now_node.prev
@@ -33,34 +34,52 @@ class draw:
             root_n = len(root_list)-1-i
             now_node = root_list[root_n]
 
+            total_piece_n.append(now_node.piece_n)
+
             #現在のノードの処理
+            total_edge = now_node.prev_total_edge
+            if i != 0:
 
-            for (i, piece) in enumerate(total_edge):
+                for (j) in range(len(total_edge)+1):
 
-                if now_node.next_edge_n < total_edge[i]:
-                    length = len(polygon[i])
+                    if j == len(total_edge):
+                        next_edge_n = now_node.next_edge_n - total_edge[j-1] + 1
 
-                    if i == 0:
-                        next_edge_n = now_node.next_edge_n + 1
+                        x1 = polygon[now_node.piece_n][next_edge_n-1]
+
+                        length = len(polygon[now_node.piece_n])
+
+                        if next_edge_n == length:
+                           next_edge_n = 0
+                
+                        x = polygon[now_node.piece_n][next_edge_n]  
+
                     else:
-                        next_edge_n = now_node.next_edge_n - total_edge[i-1] + 1
+
+                        if now_node.next_edge_n < total_edge[j]:
+                            length = len(polygon[total_piece_n[j]])
+
+                            if j == 0:
+                                next_edge_n = now_node.next_edge_n + 1
+                            else:
+                                next_edge_n = now_node.next_edge_n - total_edge[j-1] + 1
                     
-                    if next_edge_n == length:
-                       next_edge_n = 0
+                            x1 = polygon[total_piece_n[j]][next_edge_n-1]
+
+                            if next_edge_n == length:
+                               next_edge_n = 0
                 
-                    x = polygon[i][next_edge_n] 
-                    x1 = polygon[i][next_edge_n-1]
+                            x = polygon[total_piece_n[j]][next_edge_n] 
 
-                    break
+                            break
 
-                elif i == len(total_edge)-1:
-                    next_edge_n = now_node.next_edge_n - total_edge[i] + 1
-
-                    if next_edge_n == length:
-                       next_edge_n = 0
-                
-                    x = polygon[i+1][next_edge_n] 
-                    x1 = polygon[i+1][next_edge_n-1]
+            else:
+                length = len(polygon[i])
+                next_edge_n = now_node.next_edge_n + 1
+                x1 = polygon[i][next_edge_n-1]
+                if next_edge_n == length:
+                           next_edge_n = 0
+                x = polygon[i][next_edge_n] 
 
             #1つ上のノードへ
             now_node = root_list[root_n-1]
@@ -73,15 +92,12 @@ class draw:
 
             #2つのピースを合わせる
             instance = copy.deepcopy(x - y)
-            for (i, piece) in enumerate(polygon[piece_n]):
-                polygon[piece_n][i] += instance
+            for (j, piece) in enumerate(polygon[piece_n]):
+                polygon[piece_n][j] += instance
 
             #角度計算
             VecA = x1 - x
             VecB = polygon[piece_n][prev_edge_n] - x
-
-            print("VecA " + str(VecA))
-            print("VecB " + str(VecB))
 
             Ang = Store.cul_angle(VecA[0], VecB[0])
             
@@ -91,20 +107,20 @@ class draw:
 
             #軸を(0,0)に平行移動
             pivot = copy.deepcopy(polygon[piece_n][prev_edge_n-1])
-            for (i, piece) in enumerate(polygon[piece_n]):
-                polygon[piece_n][i] -= pivot
+            for (j, piece) in enumerate(polygon[piece_n]):
+                polygon[piece_n][j] -= pivot
 
 
-            for (i, piece) in enumerate(polygon[piece_n]):
+            for (j, piece) in enumerate(polygon[piece_n]):
                 # 回転による座標変換
                 if direction > 0:                 
-                    polygon[piece_n][i] = rotate(Ang * -1.0, polygon[piece_n][i])
+                    polygon[piece_n][j] = rotate(-Ang, polygon[piece_n][j])
                 else:
-                    polygon[piece_n][i] = rotate(Ang, polygon[piece_n][i])
+                    polygon[piece_n][j] = rotate(Ang, polygon[piece_n][j])
 
             #もとに戻す
-            for (i) in range(len(polygon[piece_n])):
-                polygon[piece_n][i] += pivot
+            for (j) in range(len(polygon[piece_n])):
+                polygon[piece_n][j] += pivot
 
         #重心計算
         for (i, cnt) in enumerate(polygon):
@@ -135,11 +151,8 @@ def rotate(deg, matrix):
     
     x = copy.deepcopy(matrix[0][0])
 
-
-
     matrix[0][0] = matrix[0][0] * C - matrix[0][1] * S
     matrix[0][1] = x * S + matrix[0][1] * C
-
 
     return matrix
         

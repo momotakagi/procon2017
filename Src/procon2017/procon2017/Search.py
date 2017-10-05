@@ -69,7 +69,7 @@ class Search:
         __POINT360 = 130
         __POINT360_samelen = 45
         __POINT360_difflen = 1
-        __BEAM_WIDTH = 100
+        __BEAM_WIDTH = 30
 
 
     
