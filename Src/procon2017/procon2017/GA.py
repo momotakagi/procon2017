@@ -3,6 +3,7 @@ import numpy as np
 #from sympy.geometry import Point, Polygon
 import cv2
 from numpy.random import *
+#import copy
 #     height, width = im.shape[:2]
 #定数群
 
@@ -82,6 +83,21 @@ class GA(object):
         max_y = 0
 
         for (i) in range(len(self.pieces.polygon)):
+            
+            for (j) in range(len(self.pieces.polygon[i])):
+            #軸を(0,0)に平行移動
+                pivot = copy.deepcopy(self.pieces.polygon[i][j])
+                self.pieces.polygon[i][j] -= pivot
+
+
+            for (j, piece) in enumerate(polygon[piece_n]):
+                # 回転による座標変換                
+                    polygon[i][j] = rotate(-Ang, polygon[piece_n][j])
+
+
+            #もとに戻す
+            for (j) in range(len(polygon[piece_n])):
+                polygon[piece_n][j] += pivot
             
             #枠内のピクセル値をランダムで抽出
             random_n = randint(len(self.waku_data.pixels))                                             
