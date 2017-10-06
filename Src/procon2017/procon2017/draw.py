@@ -122,24 +122,58 @@ class draw:
             for (j) in range(len(polygon[piece_n])):
                 polygon[piece_n][j] += pivot
 
-        #重心計算
-        for (i, cnt) in enumerate(polygon):
-            M = cv2.moments(cnt)
-            cx = int(M['m10']/M['m00']/2)
-            cy = int(M['m01']/M['m00']/2)
-            center_g.append((cx,cy))
-
-        #表示
         for (i) in range(len(polygon)):
             for(j, piece) in enumerate(polygon[i]):
                 polygon[i][j] = piece / 2
+
+        #重心計算
+        for (i, cnt) in enumerate(polygon):
+            M = cv2.moments(cnt)
+            cx = int(M['m10']/M['m00'])
+            cy = int(M['m01']/M['m00'])
+            center_g.append((cx,cy))
+
+        center_g_list = []
+        total_center_g = []
+        total_x = 0
+        total_y = 0
+        display_center = [1366/2, 768/2]
+        transfer_center_g = []
+
+        for (i) in range(len(center_g)):
+            center_g_list.append(list(center_g[i]))
+
+        for (i) in range(len(center_g_list)):
+            total_x += center_g_list[i][0]
+            total_y += center_g_list[i][1]
+
+        total_center_g = [int(total_x/len(polygon)), int(total_y/len(polygon))]
+
+        dif_G = [[x - y for (x, y) in zip(display_center, total_center_g)]]
+        np_dif_G = np.array(dif_G[0])
+
+        for (i) in range(len(polygon)):
+            for(j, piece) in enumerate(polygon[i]):
+                polygon[i][j] = piece + np_dif_G
+
+        for (i, cnt) in enumerate(polygon):
+            M = cv2.moments(cnt)
+            cx = int(M['m10']/M['m00'])
+            cy = int(M['m01']/M['m00'])
+            transfer_center_g.append((cx,cy))
+
+        #表示
+        for (i) in range(len(polygon)):
+            """for(j, piece) in enumerate(polygon[i]):
+                polygon[i][j] = piece / 2"""
             pts = np.array(polygon[i], np.int32)
             pts = pts.reshape((-1,1,2))
             img = cv2.polylines(img,[pts],True,(0,255,255))
-            cv2.putText(img, str(i), center_g[i], font, fontsize, (255, 255, 255), 2, cv2.LINE_AA)
-            cv2.imshow('image', img)
-            cv2.waitKey(0)          
-            cv2.destroyAllWindows
+            #cv2.putText(img, str(i), center_g[i], font, fontsize, (255, 255, 255), 2, cv2.LINE_AA)
+            cv2.putText(img, str(i), transfer_center_g[i], font, fontsize, (255, 255, 255), 2, cv2.LINE_AA)
+        cv2.imshow('image', img)
+        cv2.waitKey(0)          
+        cv2.destroyAllWindows
 
 
 def rotate(deg, matrix):
