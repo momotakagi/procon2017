@@ -66,8 +66,8 @@ class Search:
         __LENGTH_DELTA = 8
         __ANGLE_DELTA = 2
         __POINT180 = 100
-        __POINT360 = 130
-        __POINT360_samelen = 45
+        __POINT360 = 180
+        __POINT360_samelen = 300
         __POINT360_difflen = 1
         __BEAM_WIDTH = 30
 
@@ -160,9 +160,9 @@ class Search:
                     tmp_sort_list = []
                     while self.queue.empty() == False:
                         __Tmp = self.queue.get()
-                        tmp_sort_list.append({"object":__Tmp, "total_edge":__Tmp.total_edge})
+                        tmp_sort_list.append({"object":__Tmp, "total_edge":__Tmp.total_edge, "point":__Tmp.point})
 
-                    sorted_list = sorted(tmp_sort_list, key=lambda x:x["total_edge"])
+                    sorted_list = sorted(tmp_sort_list, key=lambda x:(-x["point"], x["total_edge"]))
 
                     for i in range(__BEAM_WIDTH):
                         if i == len(sorted_list):
@@ -409,10 +409,14 @@ class Search:
                                     next_tmp_ang = tmp_main_angle[self.get_other_index(tmp_main_length[_tmp_other], tmp_main_length[_t_index][_side])][2]
                                     next_base_ang = parent.this_main_angle[self.get_other_index(child.this_main_length[_tmp_base_other], parent.this_main_length[_m_index][_side_main])][2]
 
+
+
+
+
                                     
                                     if abs(next_tmp_length - next_base_length) < __LENGTH_DELTA:
                                         #となりと長さ一致
-                                        if abs((next_tmp_ang + next_base_ang) - 180) < __LENGTH_DELTA:
+                                        if abs((next_tmp_ang + next_base_ang) - 180) < __ANGLE_DELTA:
                                             #####そしてとなり180###########
 
                                             ###180度を獲得したのでポイント
@@ -456,7 +460,7 @@ class Search:
 
 
 
-                                        elif abs((next_tmp_ang + next_base_ang) - 360) < __LENGTH_DELTA:
+                                        elif abs((next_tmp_ang + next_base_ang) - 360) < __ANGLE_DELTA:
                                             roop_flag = True
                                             print("360だったので次に移行します1")
 
@@ -504,6 +508,13 @@ class Search:
                                             child.this_main_length[_t_index + _old_len][1] = -1
                                             child.this_main_length[_m_index][0] = -1
                                             child.this_main_length[_m_index][1] = -1
+
+
+                                    elif next_tmp_length < next_base_length and next_tmp_ang > 180 + __ANGLE_DELTA:
+                                        #短くて角度いかれてるヤツ
+                                        #おけない確定なので次！
+                                        print("えだがり")
+                                        continue
 
 
 
@@ -641,7 +652,7 @@ class Search:
                                     
                                     if abs(next_tmp_length - next_base_length) < __LENGTH_DELTA:
                                         #となりと長さ一致
-                                        if abs((next_tmp_ang + next_base_ang) - 180) < __LENGTH_DELTA:
+                                        if abs((next_tmp_ang + next_base_ang) - 180) < __ANGLE_DELTA:
                                             #そしてとなり180
 
                                             ###180度を獲得したのでポイント
@@ -681,7 +692,7 @@ class Search:
                                             child.this_main_length[_tmp_other + _old_len][0] = -1
                                             child.this_main_length[_tmp_other + _old_len][1] = -1
 
-                                        elif abs((next_tmp_ang + next_base_ang) - 360) < __LENGTH_DELTA:
+                                        elif abs((next_tmp_ang + next_base_ang) - 360) < __ANGLE_DELTA:
                                             roop_flag = True
                                             print("360だったので次に移行します2")
 
@@ -728,6 +739,12 @@ class Search:
                                             child.this_main_length[_m_index][1] = -1
 
 
+
+                                    elif next_tmp_length < next_base_length and next_tmp_ang > 180 + __ANGLE_DELTA:
+                                        #短くて角度いかれてるヤツ
+                                        #おけない確定なので次！
+                                        print("えだがり")
+                                        continue
 
 
                                     else:
