@@ -72,7 +72,7 @@ class Search:
         __POINT360 = 300
         __POINT360_samelen = 500
         __POINT360_difflen = 0
-        __BEAM_WIDTH = 50
+        __BEAM_WIDTH = 100
 
 
     
@@ -866,6 +866,21 @@ class Search:
                                                     
 
                     #next_edgeをそのピースの辺分生成
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                     if child.used_piece == []:
                         rt_children.append(child)

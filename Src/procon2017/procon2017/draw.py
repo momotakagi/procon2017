@@ -12,6 +12,8 @@ class draw:
     #コンストラクタ
     def __init__(self, pieces, polygon, fin_node):
         img = np.zeros((768, 1366, 3), np.uint8)
+
+
         self.pieces = pieces
         global total
         total = pieces.total_piece_num
@@ -124,7 +126,7 @@ class draw:
 
         for (i) in range(len(polygon)):
             for(j, piece) in enumerate(polygon[i]):
-                polygon[i][j] = piece / 2
+                polygon[i][j] = piece / 4
 
         #重心計算
         for (i, cnt) in enumerate(polygon):
@@ -168,12 +170,24 @@ class draw:
                 polygon[i][j] = piece / 2"""
             pts = np.array(polygon[i], np.int32)
             pts = pts.reshape((-1,1,2))
-            img = cv2.polylines(img,[pts],True,(0,255,255))
+            img = cv2.polylines(img,[pts],True,(0, 255, 255))
+
             #cv2.putText(img, str(i), center_g[i], font, fontsize, (255, 255, 255), 2, cv2.LINE_AA)
             cv2.putText(img, str(i), transfer_center_g[i], font, fontsize, (255, 255, 255), 2, cv2.LINE_AA)
+
+
         cv2.imshow('image', img)
         cv2.waitKey(0)          
         cv2.destroyAllWindows
+
+
+
+
+
+
+
+ 
+  
 
 
 def rotate(deg, matrix):
