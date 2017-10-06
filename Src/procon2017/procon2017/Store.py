@@ -228,7 +228,7 @@ def approx_point(contours, im, Pieces, all_pixel):
         Area.append(cv2.contourArea(cnt))
 
         #輪郭近似
-        epsilon = 0.006*cv2.arcLength(cnt,True)
+        epsilon = 0.007*cv2.arcLength(cnt,True)
         approx = cv2.approxPolyDP(cnt,epsilon,False)
         approx = approx[0:-1]  #順番重複回避
         polygon.append(approx)
@@ -270,7 +270,7 @@ def approx_point(contours, im, Pieces, all_pixel):
 
 ############################################力技###################################################
              #2点間の中点にピースは含まれていなかったら360から引く
-             direction = (VecA + VecB) / 3            
+             direction = (VecA + VecB) / 2            
              direction = direction + approx[pivot]
              casted = direction.astype(int)
 
@@ -281,8 +281,8 @@ def approx_point(contours, im, Pieces, all_pixel):
              for ap in approx:
                  poly.append((ap[0,0], ap[0,1]))
 
-             poly =  Polygon(*poly)
-             if poly.encloses_point(point):
+             polys =  Polygon(*poly)
+             if polys.encloses_point(point):
                  Ang = 360 - Ang
 
              angle[i].append(Ang)

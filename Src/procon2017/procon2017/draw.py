@@ -126,7 +126,7 @@ class draw:
 
         for (i) in range(len(polygon)):
             for(j, piece) in enumerate(polygon[i]):
-                polygon[i][j] = piece / 4
+                polygon[i][j] = piece / 5
 
         #重心計算
         for (i, cnt) in enumerate(polygon):
@@ -351,8 +351,8 @@ def chk(pieces, polygon, fin_node):
     """
 
         #もしかぶってるなら
-    if len(img[img>10]) != 0:
-        print("\n\n\nかぶってる！！\n\n\n")
+    if len(img[img>10]) > 5:
+        print("かぶってる！！")
         return False   
 
     else:
