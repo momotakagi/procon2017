@@ -21,16 +21,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="draw.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="GA.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="module.py" />
-    <Compile Include="Search.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Store.py" />
     <Compile Include="procon2017.py" />
   </ItemGroup>

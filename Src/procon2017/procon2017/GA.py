@@ -3,7 +3,7 @@ import numpy as np
 #from sympy.geometry import Point, Polygon
 import cv2
 from numpy.random import *
-#import copy
+import copy
 #     height, width = im.shape[:2]
 #定数群
 
@@ -63,77 +63,49 @@ class GA(object):
         __RATIO_Y = 11.67
 
     def MakeGrid(self):
-        #実際のグリッドとグリッドの中心点を出す
-        #Max_X = int(self.width / __RATIO_X)
-        #Max_Y = int(self.height / __RATIO_Y)
-        #l = len(self.waku_data.pixels)
-        #Max_X2 = int(self.width)
-        #Max_Y2 = int(self.height)
-        #tuples = []
-        #for item in self.waku_data.polygon[0]:
-        #   tuples.append((item[0,0], item[0,1]) )
-        #print(tuples)
-        #waku_poly = Polygon(*tuples)
-        #print(self.waku_data.pixels[1])
+
 
         White = 0
         Black = 0
         Total_pixels =0
-        max_x = 0
-        max_y = 0
 
-        for (i) in range(len(self.pieces.polygon)):
-            
-            for (j) in range(len(self.pieces.polygon[i])):
-            #軸を(0,0)に平行移動
-                pivot = copy.deepcopy(self.pieces.polygon[i][j])
-                self.pieces.polygon[i][j] -= pivot
-
-
-            for (j, piece) in enumerate(polygon[piece_n]):
-                # 回転による座標変換                
-                    polygon[i][j] = rotate(-Ang, polygon[piece_n][j])
-
-
-            #もとに戻す
-            for (j) in range(len(polygon[piece_n])):
-                polygon[piece_n][j] += pivot
-            
-            #枠内のピクセル値をランダムで抽出
-            random_n = randint(len(self.waku_data.pixels))                                             
-            random_pixel = self.waku_data.pixels[random_n]
-            
-            #グリッド化  問題あるかも？
-            random_gred = random_pixel / [__RATIO_Y,__RATIO_X]                                          
-
-            #移動距離を計算
-            s = random_gred - (self.pieces.polygon[i][0] / [__RATIO_X,__RATIO_Y])                       
-            
-            #ピースの全頂点を移動
-            for (j) in range(len(self.pieces.polygon[i])):                                              
-           
-                self.pieces.polygon[i][j] =  self.pieces.polygon[i][j] + s * [__RATIO_X,__RATIO_Y]
-            
-            #描画　表示はしていない
-            pts = np.array(self.pieces.polygon[i], np.int32)
-            pts = pts.reshape((-1,1,2))
-            cv2.fillPoly(self.img, [pts], color=(255,255,255))
-            self.img = cv2.polylines(self.img,[pts],True,(0,255,255))
-          
-        #名前が長いため適当に格納
+        pieces = self.pieces.polygon
         pix = self.waku_data.pixels
         
-        #取りうるピクセル値の最大値を求めている　確認用
-        '''
-        for i in range(len(pix)):
-                if(max_x <= pix[i][0][1]):
-                    max_x = pix[i][0][1]
-                    
+        for (i) in range(len(pieces)): 
+            #ピースバラマキ
+            for (i) in range(len(pieces)):
+            
+                pivot = copy.deepcopy(pieces[i][0])
+                random_ang = randint(360)
 
-                if(max_y <= pix[i][0][0]):
-                    max_y = pix[i][0][0]
-        '''      
-        
+                for (j) in range(len(pieces[i])):
+                #軸を(0,0)に平行移動
+                    pieces[i][j] -= pivot
+
+                # 回転による座標変換           
+                    pieces[i][j] = self.rotate(random_ang, pieces[i][j])
+            
+                #枠内のピクセル値をランダムで抽出
+                random_n = randint(len(pix))                                             
+                random_pixel = pix[random_n]
+            
+                #グリッド化  問題あるかも？
+                random_gred = random_pixel / [__RATIO_Y,__RATIO_X]                                          
+
+                #移動距離を計算
+                s = random_gred - (pieces[i][0] / [__RATIO_X,__RATIO_Y])                       
+            
+                #ピースの全頂点を移動
+                for (j) in range(len(pieces[i])):                                              
+           
+                    pieces[i][j] =  pieces[i][j] + s * [__RATIO_X,__RATIO_Y]
+            
+                #描画　表示はしていない
+                pts = np.array(pieces[i], np.int32)
+                pts = pts.reshape((-1,1,2))
+                cv2.fillPoly(self.img, [pts], color=(255,255,255))
+                self.img = cv2.polylines(self.img,[pts],True,(0,255,0))  
 
         #枠内での白黒確認
         for i in range(len(pix)):
@@ -149,9 +121,6 @@ class GA(object):
                     
         Black = Total_pixels - White
         
-        #print("Max_x =" + str(max_x))
-        #print("Max_Y =" + str(max_y))
-
         print("Total =" + str(Total_pixels))
         print("White =" + str(White))
         print("Black =" + str(Black))
@@ -159,3 +128,17 @@ class GA(object):
         cv2.imshow('image', self.img)         
         cv2.waitKey(0)
         cv2.destroyAllWindows
+
+    def rotate(self, deg, matrix):
+        # degreeをradianに変換
+    
+        r = np.radians(deg)
+        C = np.cos(r)
+        S = np.sin(r)
+    
+        x = copy.deepcopy(matrix[0][0])
+
+        matrix[0][0] = matrix[0][0] * C - matrix[0][1] * S
+        matrix[0][1] = x * S + matrix[0][1] * C
+
+        return matrix    
