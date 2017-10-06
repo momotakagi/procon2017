@@ -23,7 +23,10 @@ def cul_angle(x, y):
     theta = rad * 180 / np.pi
 
     theta = round(theta,1)
-    return theta
+
+    a = float(theta)
+    print(type(a))
+    return a
 
 
 def get_im(file_name):

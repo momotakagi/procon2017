@@ -24,7 +24,7 @@ class draw:
         total_piece_n=[]
 
         #fin_nodeの根から処理
-        now_node = fin_node[0]
+        now_node = fin_node
         root_list = [now_node]
         for (i) in range(len(polygon)-1):
             now_node = now_node.prev

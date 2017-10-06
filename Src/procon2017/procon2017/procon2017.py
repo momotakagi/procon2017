@@ -5,6 +5,7 @@ from module import Data #こんな書き方もできる
 from Search import Search
 import time
 from draw import draw
+import copy
 
 if __name__ == '__main__':
 
@@ -61,6 +62,8 @@ if __name__ == '__main__':
     print("\n_________________________________________________________")
     print ("elapsed_time:{0}".format(time.time() - start) + "[sec]")
    
+    PiecesBackup = copy.deepcopy(Pieces)
 
-
-    draw = draw(Pieces, Pieces.polygon, fin_node)
+    __tmp = []
+    for node in fin_node:
+        __tmp.append(draw(Pieces, copy.deepcopy(Pieces.polygon), node))
