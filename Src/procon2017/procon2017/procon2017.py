@@ -13,7 +13,6 @@ if __name__ == '__main__':
     im1 = Store.get_im('1.jpg')
     cnts1, all_pixel1 = Store.colormask(im1)
 
-    """
     Pieces2 = Data()  #ピースのDBクラス
     im2 = Store.get_im('2.jpg')
     cnts2, all_pixel2 = Store.colormask(im2)
@@ -21,10 +20,9 @@ if __name__ == '__main__':
     Pieces3 = Data()  #ピースのDBクラス
     im3 = Store.get_im('3.jpg')
     cnts3, all_pixel3 = Store.colormask(im3)
-    """
+    
     #ここでデータ格納
-    polygon1 = Store.approx_point(cnts1, im1, Pieces1, all_pixel1)
-    """
+    polygon1 = Store.approx_point(cnts1, im1, Pieces1, all_pixel1)    
     polygon2 = Store.approx_point(cnts2, im2, Pieces2, all_pixel2)
     polygon3 = Store.approx_point(cnts3, im3, Pieces3, all_pixel3)
     
@@ -35,7 +33,7 @@ if __name__ == '__main__':
     Pieces.length = Pieces1.length + Pieces2.length + Pieces3.length
     Pieces.polygon = Pieces1.polygon + Pieces2.polygon + Pieces3.polygon
     Pieces.total_piece_num = Pieces1.total_piece_num + Pieces2.total_piece_num + Pieces3.total_piece_num
-    """
+    
 
     #枠を取得
     Waku_data = Data()
@@ -48,7 +46,7 @@ if __name__ == '__main__':
     
     Waku_data.pixels = all_pixe_waku
     #探索開始
-    ga = GA(Pieces1, Waku_data, waku_im)
+    ga = GA(Pieces, Waku_data, waku_im)
     ga.MakeGrid()
 
 

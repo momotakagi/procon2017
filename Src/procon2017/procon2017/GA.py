@@ -63,65 +63,83 @@ class GA(object):
 
     def MakeGrid(self):
         #実際のグリッドとグリッドの中心点を出す
-        Max_X = int(self.width / __RATIO_X)
-        Max_Y = int(self.height / __RATIO_Y)
-        w = 0
-
-        Max_X2 = int(self.width)
-        Max_Y2 = int(self.height)
-
-        tuples = []
-        for item in self.waku_data.polygon[0]:
-            tuples.append((item[0,0], item[0,1]) )
-              
-        
-        print(tuples)
+        #Max_X = int(self.width / __RATIO_X)
+        #Max_Y = int(self.height / __RATIO_Y)
+        #l = len(self.waku_data.pixels)
+        #Max_X2 = int(self.width)
+        #Max_Y2 = int(self.height)
+        #tuples = []
+        #for item in self.waku_data.polygon[0]:
+        #   tuples.append((item[0,0], item[0,1]) )
+        #print(tuples)
         #waku_poly = Polygon(*tuples)
+        #print(self.waku_data.pixels[1])
 
-        
+        White = 0
+        Black = 0
+        Total_pixels =0
+        max_x = 0
+        max_y = 0
 
         for (i) in range(len(self.pieces.polygon)):
             
-            x = randint(Max_X)
-            y = randint(Max_Y)
-
-            l = [x,y]
-
-            s = l - (self.pieces.polygon[i][0] / [__RATIO_X,__RATIO_Y])
+            #枠内のピクセル値をランダムで抽出
+            random_n = randint(len(self.waku_data.pixels))                                             
+            random_pixel = self.waku_data.pixels[random_n]
             
-            for (j) in range(len(self.pieces.polygon[i])):
+            #グリッド化  問題あるかも？
+            random_gred = random_pixel / [__RATIO_Y,__RATIO_X]                                          
+
+            #移動距離を計算
+            s = random_gred - (self.pieces.polygon[i][0] / [__RATIO_X,__RATIO_Y])                       
+            
+            #ピースの全頂点を移動
+            for (j) in range(len(self.pieces.polygon[i])):                                              
            
                 self.pieces.polygon[i][j] =  self.pieces.polygon[i][j] + s * [__RATIO_X,__RATIO_Y]
             
-            
+            #描画　表示はしていない
             pts = np.array(self.pieces.polygon[i], np.int32)
             pts = pts.reshape((-1,1,2))
             cv2.fillPoly(self.img, [pts], color=(255,255,255))
             self.img = cv2.polylines(self.img,[pts],True,(0,255,255))
+          
+        #名前が長いため適当に格納
+        pix = self.waku_data.pixels
+        
+        #取りうるピクセル値の最大値を求めている　確認用
+        '''
+        for i in range(len(pix)):
+                if(max_x <= pix[i][0][1]):
+                    max_x = pix[i][0][1]
+                    
+
+                if(max_y <= pix[i][0][0]):
+                    max_y = pix[i][0][0]
+        '''      
+        
+
+        #枠内での白黒確認
+        for i in range(len(pix)):
             
- 
+            self.pixelValue = self.img[pix[i][0][1],pix[i][0][0],1]
+
+            Total_pixels += 1    
+            
+            if self.pixelValue == 255:
+                White += 1
+         
+            
+                    
+        Black = Total_pixels - White
+        
+        #print("Max_x =" + str(max_x))
+        #print("Max_Y =" + str(max_y))
+
+        print("Total =" + str(Total_pixels))
+        print("White =" + str(White))
+        print("Black =" + str(Black))
         
         cv2.imshow('image', self.img)         
         cv2.waitKey(0)
         cv2.destroyAllWindows
-        print(Max_X)
-        print(Max_Y)
-
-        for x in range(0,Max_X2,3):
-            for y in range(0,Max_Y2,3):
-          
-                self.pixelValue = self.img[y,x,1]
-                
-                if self.pixelValue == 255:
-                    w += 1
-                    
-        Total_pixels = Max_X2 * Max_Y2
-                    
-        b = (Max_X2 * Max_Y2) - w                   
-
-        print("Total =" + str(Total_pixels))
-        print("white =" + str(w))
-        print("black =" + str(b))
-        
-        
-   

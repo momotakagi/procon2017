@@ -179,6 +179,9 @@ def colormask_waku(im):
 
 
     #ピースの領域情報(角度の時使う)
+
+
+    img_mask = 255 - img_mask
     pixelpoints = cv2.findNonZero(img_mask)
 
 
