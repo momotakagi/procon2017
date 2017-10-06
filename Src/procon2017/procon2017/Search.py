@@ -22,6 +22,7 @@ from module import State
 from module import Data
 from functools import lru_cache
 import bisect
+import draw
 
 
 
@@ -250,6 +251,8 @@ class Search:
                         pt = pt.prev
                     ###############################################
 
+                    
+
                     #終わったシリーズにappend
                     Finish_Node.append(child)
 
@@ -313,7 +316,10 @@ class Search:
         dict_length = self.search_length(parent.used_piece, base_length)
 
 
-        for double in range(2):
+        for double in range(1):
+
+            double = 1
+
             for tmp in dict_length:
                 i = tmp["i"]
                 j = tmp["j"]
@@ -867,19 +873,9 @@ class Search:
 
                     #next_edgeをそのピースの辺分生成
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+                    #もしピースかぶったら
+                    if draw.chk(self.pieces, copy.deepcopy(self.pieces.polygon), child) == False:
+                        continue
 
 
                     if child.used_piece == []:
@@ -955,3 +951,10 @@ class Search:
 
 
         return [dic_fin_node[j]["node"] for j in range(len(dic_fin_node))]
+
+
+
+
+
+
+
