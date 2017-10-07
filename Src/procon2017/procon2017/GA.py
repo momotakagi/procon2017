@@ -73,6 +73,8 @@ class GA(object):
 
         pieces = self.pieces.polygon
         pix = self.waku_data.pixels
+
+        print(str(self.width * self.height))
         
         for (n) in range(len(pieces)):
             White = 0
@@ -110,9 +112,10 @@ class GA(object):
                 pts = np.array(pieces[i], np.int32)
                 pts = pts.reshape((-1,1,2))
                 cv2.fillPoly(self.img, [pts], color=(255,255,255))
-                self.img = cv2.polylines(self.img,[pts],True,(0,255,0))  
+                #self.img = cv2.polylines(self.img,[pts],True,(0,255,0))  
 
             #枠内での白黒確認
+            """
             for i in range(len(pix)):
             
                 self.pixelValue = self.img[pix[i][0][1],pix[i][0][0],1]
@@ -121,22 +124,35 @@ class GA(object):
             
                 if self.pixelValue == 255:
                     White += 1
-                
-           # print("White"+ str(n) +" = " + str(White))
+            """
+            #print(self.img[i])
+            White = len(self.img[self.img  > 254])
+            #print("White"+ str(n) +" = " + str(White))
 
             if White > Max_White:
                 Max_White = White
 
                 suit_pix = pieces
 
-        for (n) in range (40):
-            
+        print("Max_White =" + str(Max_White))
+        #print(suit_pix[i])         
+        
+
+
+
+#####################　　　まき直し　　　############################################
+
+
+        for (n) in range (60):
+
             for (i) in range(len(pieces)):
 
                 White = 0
                 Total_pixels =0
                 self.img = np.zeros((self.height, self.width, 3), np.uint8)
-            
+
+                temp_pix = suit_pix
+
                 #枠内のピクセル値をランダムで抽出
                 random_n = randint(len(pix))                                             
                 random_pixel = pix[random_n]
@@ -145,46 +161,55 @@ class GA(object):
                 random_gred = random_pixel / [__RATIO_Y,__RATIO_X]                                          
 
                 #移動距離を計算
-                s = random_gred - (suit_pix[i][0] / [__RATIO_X,__RATIO_Y])                       
-            
-                #ピースの全頂点を移動
-                for (j) in range(len(pieces[i])):                                              
+                s = random_gred - (suit_pix[i][0] / [__RATIO_X,__RATIO_Y])     
+
+                for (j) in range(len(pieces[i])):                                                 
            
-                    suit_pix[i][j] =  suit_pix[i][j] + s * [__RATIO_X,__RATIO_Y]
+                        temp_pix[i][j] =  suit_pix[i][j] + s * [__RATIO_X,__RATIO_Y]
             
                 #描画　表示はしていない
-                pts = np.array(suit_pix[i], np.int32)
-                pts = pts.reshape((-1,1,2))
-                cv2.fillPoly(self.img, [pts], color=(255,255,255))
-                self.img = cv2.polylines(self.img,[pts],True,(0,255,0))  
-
-            #枠内での白黒確認
-            for i in range(len(pix)):
-            
-                self.pixelValue = self.img[pix[i][0][1],pix[i][0][0],1]
-
-                Total_pixels += 1    
-            
-                if self.pixelValue == 255:
-                    White += 1
-                
-            #print("White"+ str(n) +" = " + str(White))
-
-            if White > Max_White:
-                Max_White = White
-
-                suit_pix = pieces
+                for (k) in range(len(pieces)):
+                    pts = np.array(temp_pix[k], np.int32)
+                    pts = pts.reshape((-1,1,2))
+                    cv2.fillPoly(self.img, [pts], color=(255,255,255))
+                    #self.img = cv2.polylines(self.img,[pts],True,(0,255,0))
                     
-        Black = Total_pixels - Max_White
+                cv2.imshow('image', self.img)         
+                cv2.waitKey(0)
+                cv2.destroyAllWindows
+                
+                #枠内での白黒確認
+
+                """
+                for i in range(len(pix)):
+            
+                    self.pixelValue = self.img[pix[i][0][1],pix[i][0][0],1]
+
+                    Total_pixels += 1    
+            
+                    if self.pixelValue == 255:
+                        White += 1
+                """
+                
+                White = len(self.img[self.img  > 254])
+                #print("White"+ str(n) +" = " + str(White))
+
+                if White > Max_White:
+                    Max_White = White
+
+                    elite_pix = temp_pix
+
+                    print("Max_White =" + str(Max_White))
+                    cv2.imshow('image', self.img)         
+                    cv2.waitKey(0)
+                    cv2.destroyAllWindows
         
-        print("Total =" + str(Total_pixels))
-        #print("White =" + str(White))
-        print("Black =" + str(Black))
+            suit_pix = elite_pix
         
         print("Max_White =" + str(Max_White))
 
         for (i) in range(len(pieces)):
-            pts = np.array(suit_pix[i], np.int32)
+            pts = np.array(elite_pix[i], np.int32)
             pts = pts.reshape((-1,1,2))
             cv2.fillPoly(self.img, [pts], color=(255,255,255))
             self.img = cv2.polylines(self.img,[pts],True,(0,255,0))  
