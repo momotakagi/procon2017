@@ -148,7 +148,7 @@ class GA(object):
 
 
         for (n) in range (60):
-            i = 0
+            
             while True:                
                 White = 0
                 Total_pixels =0
@@ -205,9 +205,7 @@ class GA(object):
                     break
 
 
-                i += 1
-                if i == len(pieces):
-                    i = 0
+                
                        
         
         suit_pix = copy.deepcopy(elite_pix)
