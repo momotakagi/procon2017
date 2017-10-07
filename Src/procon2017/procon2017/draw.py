@@ -41,7 +41,7 @@ class draw:
 
         print("total_fin_node" + str(total_fin_node))
 
-        total_piece_n.append(0)
+        total_piece_n.append()
 
         for (i) in range(total_fin_node-1):#len(polygon)-1
             root_n = len(root_list)-1-i
