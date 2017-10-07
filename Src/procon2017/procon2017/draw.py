@@ -3,6 +3,8 @@ import cv2
 import Store 
 import copy
 
+
+
 class draw:
     """description of class"""
 
@@ -24,31 +26,31 @@ class draw:
         center_g = []
 
         total_piece_n=[]
+
+        corr_edge = fin_node.corr_edge
         
+
         #fin_nodeの根から処理
         now_node = fin_node
+        n_node = fin_node
+
+        total_fin_node = 1
+        while n_node.prev_edge_n != -1:
+            total_fin_node += 1
+            n_node = n_node.prev
+
         root_list = [now_node]
-        for (i) in range(len(polygon)-1):
+        for (i) in range(total_fin_node-1):#len(polygon)-1
             now_node = now_node.prev
             root_list.append(now_node)
-        
-        """
-        now_node = fin_node
-        root_list = [now_node]
-        disp_pieces.append(now_node.piece_n)
-        while now_node.prev_edge_n != -1:
-            now_node = now_node.prev
-            root_list.append(now_node)
-            disp_pieces.append(now_node.piece_n)
-        """
+
+        #print("total_fin_node" + str(total_fin_node))
 
         total_piece_n.append(0)
 
-        for (i) in range(len(polygon)-1):#len(polygon)-1
+        for (i) in range(total_fin_node-1):#len(polygon)-1
             root_n = len(root_list)-1-i
             now_node = root_list[root_n]
-
-            #total_piece_n.append(now_node.piece_n)
 
             #現在のノードの処理
             total_edge = now_node.prev_total_edge
@@ -64,33 +66,40 @@ class draw:
                         length = len(polygon[now_node.piece_n])
 
                         if next_edge_n == length:
-                           
                             next_edge_n = 0
-                            x = polygon[now_node.piece_n][next_edge_n] 
-                        else:
-                            x = polygon[now_node.piece_n][next_edge_n] 
-                            
-                         
+                
+                        x = polygon[now_node.piece_n][next_edge_n]  
 
                     else:
 
                         if now_node.next_edge_n < total_edge[j]:
                             length = len(polygon[total_piece_n[j]])
 
+                        
                             if j == 0:
                                 next_edge_n = now_node.next_edge_n + 1
-
                             else:
                                 next_edge_n = now_node.next_edge_n - total_edge[j-1] + 1
                     
                             x1 = polygon[total_piece_n[j]][next_edge_n-1]
 
-                            if next_edge_n == length:                                
+
+
+                            if next_edge_n == length:
                                 next_edge_n = 0
-                                x = polygon[now_node.piece_n][next_edge_n]
+                                for (k) in range(len(total_edge)+1):
+                                    if k == len(total_edge):
+                                            x = polygon[now_node.piece_n][corr_edge[i][2] - total_edge[k-1]]
+                                    elif corr_edge[i][2] < total_edge[k]:
+                                        if k == 0:
+                                            x = polygon[0][next_edge_n]
+                                        else:
+                                            x = polygon[total_piece_n[k]][corr_edge[i][2] - total_edge[k]]
+                                        break
                             else:
                                 x = polygon[total_piece_n[j]][next_edge_n] 
-                
+                        
+
                             
 
                             break
@@ -100,15 +109,23 @@ class draw:
                 next_edge_n = now_node.next_edge_n + 1
                 x1 = polygon[i][next_edge_n-1]
                 if next_edge_n == length:
-                           next_edge_n = 0
+                            next_edge_n = 0
                 x = polygon[i][next_edge_n] 
-            
+
+            """
+            print("total_edge" + str(total_edge))
+            print("x" + str(x))
+            print("x1" + str(x1))
+            print(corr_edge)
+            print(polygon)
+            """
 
             #1つ上のノードへ
             now_node = root_list[root_n-1]
             piece_n = now_node.piece_n
 
             total_piece_n.append(now_node.piece_n)
+            
 
             y = copy.deepcopy(polygon[piece_n][now_node.prev_edge_n])
             prev_edge_n = now_node.prev_edge_n + 1
@@ -125,6 +142,9 @@ class draw:
             VecB = polygon[piece_n][prev_edge_n] - x
 
             Ang = Store.cul_angle(VecA[0], VecB[0])
+            """print("VecA" + str(VecA))
+            print("VecB" + str(VecB))
+            print("polygon" + str(polygon[piece_n][prev_edge_n]))"""
             
 
             #外積の計算
@@ -135,6 +155,7 @@ class draw:
             for (j, piece) in enumerate(polygon[piece_n]):
                 polygon[piece_n][j] -= pivot
 
+            #print("Ang" + str(Ang))
 
             for (j, piece) in enumerate(polygon[piece_n]):
                 # 回転による座標変換
@@ -147,13 +168,18 @@ class draw:
             for (j) in range(len(polygon[piece_n])):
                 polygon[piece_n][j] += pivot
 
-        for (i) in range(len(polygon)):
-            for(j, piece) in enumerate(polygon[i]):
-                polygon[i][j] = piece / 5
+        for (i) in range(total_fin_node):#len(polygon)
+            for(j, piece) in enumerate(polygon[total_piece_n[i]]):#polygon[i]
+                polygon[total_piece_n[i]][j] = piece / 5#polygon[i][j] = piece / 5
 
         #重心計算
-        for (i, cnt) in enumerate(polygon):
+        """for (i, cnt) in enumerate(polygon):
             M = cv2.moments(cnt)
+            cx = int(M['m10']/M['m00'])
+            cy = int(M['m01']/M['m00'])
+            center_g.append((cx,cy))"""
+        for (i) in range(total_fin_node):
+            M = cv2.moments(polygon[total_piece_n[i]])
             cx = int(M['m10']/M['m00'])
             cy = int(M['m01']/M['m00'])
             center_g.append((cx,cy))
@@ -172,33 +198,45 @@ class draw:
             total_x += center_g_list[i][0]
             total_y += center_g_list[i][1]
 
-        total_center_g = [int(total_x/len(polygon)), int(total_y/len(polygon))]
+        #total_center_g = [int(total_x/len(polygon)), int(total_y/len(polygon))]
+        total_center_g = [int(total_x/total_fin_node), int(total_y/total_fin_node)]
 
         dif_G = [[x - y for (x, y) in zip(display_center, total_center_g)]]
         np_dif_G = np.array(dif_G[0])
 
-        for (i) in range(len(polygon)):
+        """for (i) in range(len(polygon)):
             for(j, piece) in enumerate(polygon[i]):
-                polygon[i][j] = piece + np_dif_G
+                polygon[i][j] = piece + np_dif_G"""
+        for (i) in range(total_fin_node):
+            for(j, piece) in enumerate(polygon[total_piece_n[i]]):
+                polygon[total_piece_n[i]][j] = piece + np_dif_G
 
-        for (i, cnt) in enumerate(polygon):
+        """for (i, cnt) in enumerate(polygon):
             M = cv2.moments(cnt)
+            cx = int(M['m10']/M['m00'])
+            cy = int(M['m01']/M['m00'])
+            transfer_center_g.append((cx,cy))"""
+        for (i) in range(total_fin_node):
+            M = cv2.moments(polygon[total_piece_n[i]])
             cx = int(M['m10']/M['m00'])
             cy = int(M['m01']/M['m00'])
             transfer_center_g.append((cx,cy))
 
-        print("total_piece_n" + str(total_piece_n))
+        #print("total_piece_n" + str(total_piece_n))
+
+       
 
         #表示
-        for (i) in range(len(polygon)):
+        for (i) in range(total_fin_node):#len(polygon)
             """for(j, piece) in enumerate(polygon[i]):
                 polygon[i][j] = piece / 2"""
-            pts = np.array(polygon[i], np.int32)
+            #pts = np.array(polygon[i], np.int32)
+            pts = np.array(polygon[total_piece_n[i]], np.int32)
             pts = pts.reshape((-1,1,2))
             img = cv2.polylines(img,[pts],True,(0, 255, 255))
 
             #cv2.putText(img, str(i), center_g[i], font, fontsize, (255, 255, 255), 2, cv2.LINE_AA)
-            cv2.putText(img, str(i), transfer_center_g[i], font, fontsize, (255, 255, 255), 2, cv2.LINE_AA)
+            cv2.putText(img, str(total_piece_n[i]), transfer_center_g[i], font, fontsize, (255, 255, 255), 2, cv2.LINE_AA)
 
 
         cv2.imshow('image', img)
@@ -209,13 +247,39 @@ class draw:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def chk(pieces, polygon, fin_node):
 
-
+    
     img = np.zeros((768, 1366, 3), np.uint8)
 
 
-        
+    
     global total
     total = pieces.total_piece_num
 
@@ -226,31 +290,33 @@ def chk(pieces, polygon, fin_node):
 
     total_piece_n=[]
 
-    disp_pieces = []
+    corr_edge = fin_node.corr_edge
+    
+    
 
-    """
     #fin_nodeの根から処理
     now_node = fin_node
-    root_list = [now_node]
-    for (i) in range(len(polygon)-1):
-        now_node = now_node.prev
-        root_list.append(now_node)
-    """
-    now_node = fin_node
-    root_list = [now_node]
-    disp_pieces.append(now_node.piece_n)
-    while now_node.prev_edge_n != -1:
-        now_node = now_node.prev
-        root_list.append(now_node)
-        disp_pieces.append(now_node.piece_n)
+    n_node = fin_node
 
-    
-    for (i) in range(len(root_list) -1):
+    total_fin_node = 1
+    while n_node.prev_edge_n != -1:
+        total_fin_node += 1
+        n_node = n_node.prev
+
+    root_list = [now_node]
+    for (i) in range(total_fin_node-1):#len(polygon)-1
+        now_node = now_node.prev
+        root_list.append(now_node)
+
+    #print("total_fin_node" + str(total_fin_node))
+
+    total_piece_n.append(0)
+
+    for (i) in range(total_fin_node-1):#len(polygon)-1
         root_n = len(root_list)-1-i
         now_node = root_list[root_n]
 
-        total_piece_n.append(now_node.piece_n)       
-
+        #print(now_node.corr_edge[i][2])
 
         #現在のノードの処理
         total_edge = now_node.prev_total_edge
@@ -275,20 +341,30 @@ def chk(pieces, polygon, fin_node):
                     if now_node.next_edge_n < total_edge[j]:
                         length = len(polygon[total_piece_n[j]])
 
+                        
                         if j == 0:
                             next_edge_n = now_node.next_edge_n + 1
-
                         else:
                             next_edge_n = now_node.next_edge_n - total_edge[j-1] + 1
                     
                         x1 = polygon[total_piece_n[j]][next_edge_n-1]
 
-                        if next_edge_n == length:                                
+
+
+                        if next_edge_n == length:
                             next_edge_n = 0
-                            x = polygon[now_node.piece_n][next_edge_n]
+                            for (k) in range(len(total_edge)+1):
+                                if k == len(total_edge):
+                                        x = polygon[now_node.piece_n][corr_edge[i][2] - total_edge[k-1]]
+                                elif corr_edge[i][2] < total_edge[k]:
+                                    if k == 0:
+                                        x = polygon[0][next_edge_n]
+                                    else:
+                                        x = polygon[total_piece_n[k]][corr_edge[i][2] - total_edge[k]]
+                                    break
                         else:
                             x = polygon[total_piece_n[j]][next_edge_n] 
-                
+                        
 
                         break
 
@@ -299,6 +375,7 @@ def chk(pieces, polygon, fin_node):
             if next_edge_n == length:
                         next_edge_n = 0
             x = polygon[i][next_edge_n] 
+           
 
 
 
@@ -306,11 +383,15 @@ def chk(pieces, polygon, fin_node):
         now_node = root_list[root_n-1]
         piece_n = now_node.piece_n
 
+        total_piece_n.append(now_node.piece_n)
+
         y = copy.deepcopy(polygon[piece_n][now_node.prev_edge_n])
         prev_edge_n = now_node.prev_edge_n + 1
         if prev_edge_n == len(polygon[piece_n]):
                 prev_edge_n = 0
 
+
+        #print("polygon" + str(polygon[piece_n][prev_edge_n]))
         #2つのピースを合わせる
         instance = copy.deepcopy(x - y)
         for (j, piece) in enumerate(polygon[piece_n]):
@@ -321,6 +402,14 @@ def chk(pieces, polygon, fin_node):
         VecB = polygon[piece_n][prev_edge_n] - x
 
         Ang = Store.cul_angle(VecA[0], VecB[0])
+        """ print("x1" + str(x1))
+        print("x" + str(x))     
+        print(now_node.corr_edge)"""
+
+        
+        
+        
+
             
 
         #外積の計算
@@ -331,6 +420,7 @@ def chk(pieces, polygon, fin_node):
         for (j, piece) in enumerate(polygon[piece_n]):
             polygon[piece_n][j] -= pivot
 
+        #print("Ang" + str(Ang))
 
         for (j, piece) in enumerate(polygon[piece_n]):
             # 回転による座標変換
@@ -343,15 +433,22 @@ def chk(pieces, polygon, fin_node):
         for (j) in range(len(polygon[piece_n])):
             polygon[piece_n][j] += pivot
 
+    for (i) in range(total_fin_node):#len(polygon)
+        for(j, piece) in enumerate(polygon[total_piece_n[i]]):#polygon[i]
+            polygon[total_piece_n[i]][j] = piece / 5#polygon[i][j] = piece / 5
 
 
 
 
 
+    total_x = 0
+    total_y = 0
+    display_center = [1366/2, 768/2]
 
-    for (i) in disp_pieces:
-        for(j, piece) in enumerate(polygon[i]):
-            polygon[i][j] = piece / 4
+
+
+    #print("total_piece_n" + str(total_piece_n))
+
 
 
 
@@ -362,17 +459,16 @@ def chk(pieces, polygon, fin_node):
 
     x = []
     y = []
-    for i in disp_pieces:
+    for i in range(total_fin_node):
         
         __tmp = __black.copy()
 
-        pts = np.array(polygon[i], np.int32)
+        pts = np.array(polygon[total_piece_n[i]], np.int32)
         pts = pts.reshape((-1,1,2))
         cv2.fillConvexPoly(__tmp,pts,(0, 10, 0))
         cv2.polylines(__tmp,[pts],True,(0, 0, 0), 3)
 
         img = cv2.add(img, __tmp)
-
 
         x_tmp = pts[:,0]
         y_tmp = pts[0,:]
@@ -404,7 +500,6 @@ def chk(pieces, polygon, fin_node):
     if len(img[img>10]) > 5:
         print("かぶってる！！")
         return (False, 0)
-
     else:
         tmp = [Xmax-Xmin, Ymax-Ymin]    
         return (True, (min(tmp)/max(tmp)))
