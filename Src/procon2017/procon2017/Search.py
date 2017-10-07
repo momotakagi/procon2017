@@ -69,10 +69,10 @@ class Search:
         total = pieces.total_piece_num
         __LENGTH_DELTA = 8
         __ANGLE_DELTA = 2
-        __POINT180 = 100
-        __POINT360 = 300
-        __POINT360_samelen = 500
-        __POINT360_difflen = 0
+        __POINT180 = 10
+        __POINT360 = 20
+        __POINT360_samelen = 100
+        __POINT360_difflen = 10
         __BEAM_WIDTH = 100
 
 
@@ -210,9 +210,9 @@ class Search:
                     tmp_sort_list = []
                     while self.queue.empty() == False:
                         __Tmp = self.queue.get()
-                        tmp_sort_list.append({"object":__Tmp, "total_edge":__Tmp.total_edge, "point":__Tmp.point})
+                        tmp_sort_list.append({"object":__Tmp, "total_edge":__Tmp.total_edge, "point":__Tmp.point, "delta":__Tmp.delta})
 
-                    sorted_list = sorted(tmp_sort_list, key=lambda x:(-x["point"], x["total_edge"]))
+                    sorted_list = sorted(tmp_sort_list, key=lambda x:(x["delta"], -x["point"], x["total_edge"]))
                     print(sorted_list[0]["point"])
                     for i in range(__BEAM_WIDTH):
                         if i == len(sorted_list):
@@ -261,7 +261,7 @@ class Search:
                     self.queue.put(child)
 
 
-            print("Get Child fin" + str(self.queue.qsize()))
+            #print("Get Child fin" + str(self.queue.qsize()))
             
 
 
@@ -874,8 +874,11 @@ class Search:
                     #next_edgeをそのピースの辺分生成
 
                     #もしピースかぶったら
-                    if draw.chk(self.pieces, copy.deepcopy(self.pieces.polygon), child) == False:
-                        continue
+                    Booleda, child.delta = draw.chk(self.pieces, copy.deepcopy(self.pieces.polygon), child)
+                    if  Booleda == False:
+                        continue                    
+
+                    #print("delta" + str(child.delta))
 
 
                     if child.used_piece == []:
@@ -942,11 +945,11 @@ class Search:
 
            
 
-            dic_fin_node.append({"node":node, "match_len":len(matched_list),"total_edge":node.total_edge})
+            dic_fin_node.append({"node":node, "match_len":len(matched_list),"total_edge":node.total_edge, "delta":node.delta})
 
 
 
-        dic_fin_node = sorted(dic_fin_node, key=lambda x:(x["total_edge"], -x["match_len"]))
+        dic_fin_node = sorted(dic_fin_node, key=lambda x:(x["total_edge"], -x["match_len"], x["delta"]))
 
 
 

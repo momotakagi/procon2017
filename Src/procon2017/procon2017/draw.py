@@ -331,6 +331,9 @@ def chk(pieces, polygon, fin_node):
     #表示
     
     __black = img.copy()
+
+    x = []
+    y = []
     for i in disp_pieces:
         
         __tmp = __black.copy()
@@ -341,7 +344,25 @@ def chk(pieces, polygon, fin_node):
         cv2.polylines(__tmp,[pts],True,(0, 0, 0), 3)
 
         img = cv2.add(img, __tmp)
+
+        x_tmp = pts[:,0]
+        y_tmp = pts[0,:]
+
+        x.append(x_tmp.max())
+        x.append(x_tmp.min())
+        y.append(y_tmp.max())
+        y.append(y_tmp.min())
+
+
+    Xmax = max(x)
+    Xmin = min(x)
+    Ymax = max(y)
+    Ymin = min(y)
     
+    
+    
+
+
 
     """
     print(img[img>10])
@@ -353,10 +374,11 @@ def chk(pieces, polygon, fin_node):
         #もしかぶってるなら
     if len(img[img>10]) > 5:
         print("かぶってる！！")
-        return False   
+        return (False, 0)
 
     else:
-        return True
+        tmp = [Xmax-Xmin, Ymax-Ymin]    
+        return (True, (max(tmp)/min(tmp)))
 
 
 

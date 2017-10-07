@@ -66,4 +66,6 @@ if __name__ == '__main__':
 
     __tmp = []
     for node in fin_node:
-        __tmp.append(draw(Pieces, copy.deepcopy(Pieces.polygon), node))
+        print("node") 
+        print(node)
+        __tmp.append(draw(copy.deepcopy(Pieces), copy.deepcopy(Pieces.polygon), node))
