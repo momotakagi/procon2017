@@ -151,7 +151,7 @@ class GA(object):
                 Total_pixels =0
                 self.img = np.zeros((self.height, self.width, 3), np.uint8)
 
-                temp_pix = suit_pix
+                temp_pix = copy.deepcopy(suit_pix)
 
                 #枠内のピクセル値をランダムで抽出
                 random_n = randint(len(pix))                                             
@@ -173,23 +173,7 @@ class GA(object):
                     pts = pts.reshape((-1,1,2))
                     cv2.fillPoly(self.img, [pts], color=(255,255,255))
                     #self.img = cv2.polylines(self.img,[pts],True,(0,255,0))
-                    
-                cv2.imshow('image', self.img)         
-                cv2.waitKey(0)
-                cv2.destroyAllWindows
-                
-                #枠内での白黒確認
-
-                """
-                for i in range(len(pix)):
-            
-                    self.pixelValue = self.img[pix[i][0][1],pix[i][0][0],1]
-
-                    Total_pixels += 1    
-            
-                    if self.pixelValue == 255:
-                        White += 1
-                """
+        
                 
                 White = len(self.img[self.img  > 254])
                 #print("White"+ str(n) +" = " + str(White))
