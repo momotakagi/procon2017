@@ -93,7 +93,7 @@ class Search:
 
 
     #メモ化
-    @lru_cache(maxsize=1000)
+    @lru_cache(maxsize=100)
     def make_piece_collection(self, piece_num):
 
         len_piece = len(self.pieces.length[piece_num])
