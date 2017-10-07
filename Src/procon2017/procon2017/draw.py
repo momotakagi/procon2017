@@ -41,7 +41,7 @@ class draw:
 
         print("total_fin_node" + str(total_fin_node))
 
-        total_piece_n.append()
+        total_piece_n.append(0)
 
         for (i) in range(total_fin_node-1):#len(polygon)-1
             root_n = len(root_list)-1-i
@@ -78,9 +78,12 @@ class draw:
                             x1 = polygon[total_piece_n[j]][next_edge_n-1]
 
                             if next_edge_n == length:
-                               next_edge_n = 0
+                                next_edge_n = 0
+                                x = polygon[now_node.piece_n][next_edge_n]
+                            else:
+                                x = polygon[total_piece_n[j]][next_edge_n] 
                 
-                            x = polygon[total_piece_n[j]][next_edge_n] 
+                            
 
                             break
 
@@ -295,8 +298,9 @@ def chk(pieces, polygon, fin_node):
 
                         if next_edge_n == length:
                             next_edge_n = 0
-                
-                        x = polygon[total_piece_n[j]][next_edge_n] 
+                            x = polygon[now_node.piece_n][next_edge_n] 
+                        else:
+                            x = polygon[total_piece_n[j]][next_edge_n] 
 
                         break
 
