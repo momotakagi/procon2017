@@ -103,11 +103,13 @@ class GA(object):
                 random_gred = random_pixel / [__RATIO_Y,__RATIO_X]                                          
 
                 #移動距離を計算
-                s = random_gred - (pieces[i][0] / [__RATIO_X,__RATIO_Y])                       
+                s = random_gred - (pieces[i][0] / [__RATIO_Y,__RATIO_X])
+                print("s")
+                print(s)
             
                 #ピースの全頂点を移動
                 for (j) in range(len(pieces[i])):                                              
-                    pieces[i][j] =  pieces[i][j] + s * [__RATIO_X,__RATIO_Y]
+                    pieces[i][j] =  pieces[i][j] + s * [__RATIO_Y,__RATIO_X]
             
 
                 #描画　表示はしていない
@@ -122,9 +124,19 @@ class GA(object):
            
             Max_White.append(White)
         
-        suit_pix[0] = suit_pix[Max_White.index((max(Max_White)))]
+        suit_pix[0] = copy.deepcopy(suit_pix[Max_White.index((max(Max_White)))])
+
+        print("index")
+        print(Max_White.index((max(Max_White))))
             
         Max_White[0] = max(Max_White)
+
+       
+        print("Max_White")
+        print(Max_White[0])
+
+        print("suit_pix[0]")
+        print(suit_pix[0][0])
 
 
 #####################　　　まき直し　　　############################################
@@ -149,19 +161,46 @@ class GA(object):
                     random_gred = random_pixel / [__RATIO_Y,__RATIO_X]                                          
 
                     #移動距離を計算
-                    s = random_gred - (suit_pix[i][0] / [__RATIO_X,__RATIO_Y])
+                    s = random_gred - (copy.deepcopy(suit_pix[0][i]) / [__RATIO_Y,__RATIO_X])
+
+                    temp_pix[0][i] =  copy.deepcopy(suit_pix[0][i]) + s * [__RATIO_Y,__RATIO_X]
+
+                    print("suit_pix[0][i]")
+                    print(suit_pix[0][i])
+                    print("random_grid")
+                    print(random_gred)
+                    print("s")
+                    print(s)
+                    print("temp_pix[0][i]")
+                    print(temp_pix[0][i])
+
+
+
+
+                    #print(temp_pix[0])
                    
+                   
+                    """
+                    for (j) in range(len(pieces)):                          
+                        temp_pix[j][0] =  suit_pix[j][0] + s * [__RATIO_Y,__RATIO_X]
+                    """
                     
-                    for (j) in range(len(pieces[i])):                          
-                        temp_pix[i][j] =  suit_pix[i][j] + s * [__RATIO_X,__RATIO_Y]
-                       
+                    
+                    print("len(pieces)")
+                    print(len(pieces))
+
+                    
                     
                     for (r) in range(len(pieces)):
+                        temp_grid = copy.deepcopy(temp_pix[0][r]) / [__RATIO_Y,__RATIO_X]
+                        
+                        s2 = temp_grid - (copy.deepcopy(pieces[r][0]) / [__RATIO_Y,__RATIO_X])
                         for (t) in range(len(pieces[r])):
-                            temp_grid = temp_pix[r][t] / [__RATIO_Y,__RATIO_X]
-                            s2 = temp_grid - (pieces[r][0] / [__RATIO_X,__RATIO_Y])
-                            pieces[r][t] =  pieces[r][t] + s2 * [__RATIO_X,__RATIO_Y]
+                           
+                            pieces[r][t] =  copy.deepcopy(pieces[r][t]) + (s2 * [__RATIO_Y,__RATIO_X])
 
+                            #print(pieces[r][t])
+                    
                     #描画　表示はしていない
                     for (k) in range(len(pieces)):
                         pts = np.array(pieces[k], np.int32)
@@ -176,7 +215,7 @@ class GA(object):
 
                     #print("Max_White =" + str(Max_White))
                     White = len(self.img[self.img  > 254])
-                    #print("White"+ str(n) +" = " + str(White))
+                    print("White"+ str(n) +" = " + str(White))
 
 
                     #elite_pix = []
