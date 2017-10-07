@@ -69,9 +69,9 @@ class Search:
         total = pieces.total_piece_num
         __LENGTH_DELTA = 8
         __ANGLE_DELTA = 2
-        __POINT180 = 10
-        __POINT360 = 20
-        __POINT360_samelen = 100
+        __POINT180 = 1000
+        __POINT360 = 4000
+        __POINT360_samelen = 10000
         __POINT360_difflen = 10
         __BEAM_WIDTH = 100
 
@@ -212,7 +212,7 @@ class Search:
                         __Tmp = self.queue.get()
                         tmp_sort_list.append({"object":__Tmp, "total_edge":__Tmp.total_edge, "point":__Tmp.point, "delta":__Tmp.delta})
 
-                    sorted_list = sorted(tmp_sort_list, key=lambda x:(x["delta"], -x["point"], x["total_edge"]))
+                    sorted_list = sorted(tmp_sort_list, key=lambda x:(-x["point"], x["total_edge"]))
                     print(sorted_list[0]["point"])
                     for i in range(__BEAM_WIDTH):
                         if i == len(sorted_list):
@@ -878,6 +878,8 @@ class Search:
                     if  Booleda == False:
                         continue                    
 
+                    child.point *= child.delta
+
                     #print("delta" + str(child.delta))
 
 
@@ -945,11 +947,11 @@ class Search:
 
            
 
-            dic_fin_node.append({"node":node, "match_len":len(matched_list),"total_edge":node.total_edge, "delta":node.delta})
+            dic_fin_node.append({"node":node, "match_len":len(matched_list),"total_edge":node.total_edge, "point":node.point})
 
 
 
-        dic_fin_node = sorted(dic_fin_node, key=lambda x:(x["total_edge"], -x["match_len"], x["delta"]))
+        dic_fin_node = sorted(dic_fin_node, key=lambda x:(x["total_edge"], -x["point"], -x["match_len"]))
 
 
 

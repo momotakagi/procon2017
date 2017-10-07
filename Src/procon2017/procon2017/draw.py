@@ -384,7 +384,7 @@ def chk(pieces, polygon, fin_node):
 
     else:
         tmp = [Xmax-Xmin, Ymax-Ymin]    
-        return (True, (max(tmp)/min(tmp)))
+        return (True, (min(tmp)/max(tmp)))
 
 
 

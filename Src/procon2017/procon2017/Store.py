@@ -59,13 +59,24 @@ def get_distance(x, y):
     d = round(d,1)
     return d
 
-
+def write_im(im, name):
+    cv2.imwrite(name,im)
 
 def show_im(im, name):
+    
     im = resize(copy.deepcopy(im))
     cv2.imshow(name ,im)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+    """
+    plt.figure(figsize=(10,10))
+    plt.imshow(im, cmap = 'gray', interpolation = 'bicubic')    
+    plt.show()
+    """
+
+
+
 
 
 def findcontours(im):
@@ -328,7 +339,7 @@ def approx_point(contours, im, Pieces, all_pixel):
 
 
    #********************************DEBUG表示用***********************************************************###
-    fontsize = 1
+    fontsize = 3
     font = cv2.FONT_HERSHEY_PLAIN
     for (i, approx) in enumerate(polygon):
           #輪郭描画
@@ -337,7 +348,7 @@ def approx_point(contours, im, Pieces, all_pixel):
 
          
           #重心を描画(文字)
-          cv2.putText(im0,"piece:" + str(i),Center_G[i],font, fontsize + 3,(0,0,0))
+          cv2.putText(im0,"p: " + str(i),Center_G[i],font, fontsize + 3,(0,0,0))
 
           
           #角ピースの情報表示
@@ -363,8 +374,8 @@ def approx_point(contours, im, Pieces, all_pixel):
    #********************************DEBUG表示用***********************************************************###
     
 
-    show_im(im0, "im0")    
-   
+    #show_im(im0, "im0")
+    
 
 
     #データを格納
@@ -376,7 +387,7 @@ def approx_point(contours, im, Pieces, all_pixel):
     Pieces.total_piece_num = len(polygon)
 
 
-    return polygon
+    return (polygon, im0)
     
 
 
