@@ -229,7 +229,7 @@ def chk(pieces, polygon, fin_node):
     img = np.zeros((768, 1366, 3), np.uint8)
 
 
-        
+    
     global total
     total = pieces.total_piece_num
 
@@ -240,31 +240,27 @@ def chk(pieces, polygon, fin_node):
 
     total_piece_n=[]
 
-    disp_pieces = []
-
-    """
     #fin_nodeの根から処理
     now_node = fin_node
-    root_list = [now_node]
-    for (i) in range(len(polygon)-1):
-        now_node = now_node.prev
-        root_list.append(now_node)
-    """
-    now_node = fin_node
-    root_list = [now_node]
-    disp_pieces.append(now_node.piece_n)
-    while now_node.prev_edge_n != -1:
-        now_node = now_node.prev
-        root_list.append(now_node)
-        disp_pieces.append(now_node.piece_n)
+    n_node = fin_node
 
-    
-    for (i) in range(len(root_list) -1):
+    total_fin_node = 1
+    while n_node.prev_edge_n != -1:
+        total_fin_node += 1
+        n_node = n_node.prev
+
+    root_list = [now_node]
+    for (i) in range(total_fin_node-1):#len(polygon)-1
+        now_node = now_node.prev
+        root_list.append(now_node)
+
+    print("total_fin_node" + str(total_fin_node))
+
+    total_piece_n.append(0)
+
+    for (i) in range(total_fin_node-1):#len(polygon)-1
         root_n = len(root_list)-1-i
         now_node = root_list[root_n]
-
-        total_piece_n.append(now_node.piece_n)       
-
 
         #現在のノードの処理
         total_edge = now_node.prev_total_edge
@@ -298,9 +294,11 @@ def chk(pieces, polygon, fin_node):
 
                         if next_edge_n == length:
                             next_edge_n = 0
-                            x = polygon[now_node.piece_n][next_edge_n] 
+                            x = polygon[now_node.piece_n][next_edge_n]
                         else:
                             x = polygon[total_piece_n[j]][next_edge_n] 
+                
+                            
 
                         break
 
@@ -312,11 +310,12 @@ def chk(pieces, polygon, fin_node):
                         next_edge_n = 0
             x = polygon[i][next_edge_n] 
 
-
-
         #1つ上のノードへ
         now_node = root_list[root_n-1]
         piece_n = now_node.piece_n
+
+        total_piece_n.append(now_node.piece_n)
+            
 
         y = copy.deepcopy(polygon[piece_n][now_node.prev_edge_n])
         prev_edge_n = now_node.prev_edge_n + 1
@@ -333,6 +332,10 @@ def chk(pieces, polygon, fin_node):
         VecB = polygon[piece_n][prev_edge_n] - x
 
         Ang = Store.cul_angle(VecA[0], VecB[0])
+        """print("VecA" + str(VecA))
+        print("VecB" + str(VecB))
+        print("polygon" + str(polygon[piece_n][prev_edge_n]))
+        print("x" + str(x))"""
             
 
         #外積の計算
@@ -343,6 +346,7 @@ def chk(pieces, polygon, fin_node):
         for (j, piece) in enumerate(polygon[piece_n]):
             polygon[piece_n][j] -= pivot
 
+        #print("Ang" + str(Ang))
 
         for (j, piece) in enumerate(polygon[piece_n]):
             # 回転による座標変換
@@ -355,15 +359,22 @@ def chk(pieces, polygon, fin_node):
         for (j) in range(len(polygon[piece_n])):
             polygon[piece_n][j] += pivot
 
+    for (i) in range(total_fin_node):#len(polygon)
+        for(j, piece) in enumerate(polygon[total_piece_n[i]]):#polygon[i]
+            polygon[total_piece_n[i]][j] = piece / 5#polygon[i][j] = piece / 5
 
 
 
 
 
+    total_x = 0
+    total_y = 0
+    display_center = [1366/2, 768/2]
 
-    for (i) in disp_pieces:
-        for(j, piece) in enumerate(polygon[i]):
-            polygon[i][j] = piece / 4
+
+
+    print("total_piece_n" + str(total_piece_n))
+
 
 
 
@@ -374,11 +385,11 @@ def chk(pieces, polygon, fin_node):
 
     x = []
     y = []
-    for i in disp_pieces:
+    for i in range(total_fin_node):
         
         __tmp = __black.copy()
 
-        pts = np.array(polygon[i], np.int32)
+        pts = np.array(polygon[total_piece_n[i]], np.int32)
         pts = pts.reshape((-1,1,2))
         cv2.fillConvexPoly(__tmp,pts,(0, 10, 0))
         cv2.polylines(__tmp,[pts],True,(0, 0, 0), 3)
@@ -417,7 +428,7 @@ def chk(pieces, polygon, fin_node):
         return (False, 0)
     else:
         tmp = [Xmax-Xmin, Ymax-Ymin]    
-        return (True, (max(tmp)/min(tmp)))
+        return (True, (min(tmp)/max(tmp)))
 
 
 
