@@ -877,9 +877,10 @@ class Search:
                     Booleda, child.delta = draw.chk(self.pieces, copy.deepcopy(self.pieces.polygon), child)
                     if  Booleda == False:
                         continue                    
-
+                    
                     #print("delta" + str(child.delta))
-
+                    
+                    
 
                     if child.used_piece == []:
                         rt_children.append(child)
