@@ -35,16 +35,17 @@ class draw:
             n_node = n_node.prev
 
         root_list = [now_node]
-        for (i) in range(len(polygon)-1):
+        for (i) in range(total_fin_node-1):#len(polygon)-1
             now_node = now_node.prev
             root_list.append(now_node)
 
-        for (i) in range(len(polygon)-1):#total_fin_node-1
+        print("total_fin_node" + str(total_fin_node))
+
+        total_piece_n.append(0)
+
+        for (i) in range(total_fin_node-1):#len(polygon)-1
             root_n = len(root_list)-1-i
             now_node = root_list[root_n]
-
-            total_piece_n.append(now_node.piece_n)
-            print("total_piece_n" + str(total_piece_n))
 
             #現在のノードの処理
             total_edge = now_node.prev_total_edge
@@ -95,6 +96,9 @@ class draw:
             now_node = root_list[root_n-1]
             piece_n = now_node.piece_n
 
+            total_piece_n.append(now_node.piece_n)
+            
+
             y = copy.deepcopy(polygon[piece_n][now_node.prev_edge_n])
             prev_edge_n = now_node.prev_edge_n + 1
             if prev_edge_n == len(polygon[piece_n]):
@@ -110,10 +114,10 @@ class draw:
             VecB = polygon[piece_n][prev_edge_n] - x
 
             Ang = Store.cul_angle(VecA[0], VecB[0])
-            print("VecA" + str(VecA))
+            """print("VecA" + str(VecA))
             print("VecB" + str(VecB))
             print("polygon" + str(polygon[piece_n][prev_edge_n]))
-            print("x" + str(x))
+            print("x" + str(x))"""
             
 
             #外積の計算
@@ -124,7 +128,7 @@ class draw:
             for (j, piece) in enumerate(polygon[piece_n]):
                 polygon[piece_n][j] -= pivot
 
-            print("Ang" + str(Ang))
+            #print("Ang" + str(Ang))
 
             for (j, piece) in enumerate(polygon[piece_n]):
                 # 回転による座標変換
@@ -190,6 +194,10 @@ class draw:
             cx = int(M['m10']/M['m00'])
             cy = int(M['m01']/M['m00'])
             transfer_center_g.append((cx,cy))
+
+        print("total_piece_n" + str(total_piece_n))
+
+       
 
         #表示
         for (i) in range(total_fin_node):#len(polygon)
