@@ -61,7 +61,7 @@ if __name__ == '__main__':
     print("\n\n THIS IS THE BEST POINT NODE")
     pt = fin_node[0]
     while pt.piece_n != -1:  
-         print("piece:" + str(pt.piece_n) + " next_edge" + str(pt.next_edge_n) + " prev_edge" + str(pt.prev_edge_n) + " total_edge" + str(pt.total_edge) + " Is_reverse=" + str(pt.Is_reverse) + " point" + str(pt.point))
+         print("piece:" + str(pt.piece_n) + " next_edge" + str(pt.next_edge_n) + " prev_edge" + str(pt.prev_edge_n) + " total_edge" + str(pt.total_edge) + " prev_total_edge" + str(pt.prev_total_edge)+ " Is_reverse=" + str(pt.Is_reverse) + " point" + str(pt.point))
          pt = pt.prev
 
     print("\n_________________________________________________________")
@@ -73,5 +73,5 @@ if __name__ == '__main__':
     for pt in fin_node:
         print("node") 
         print(pt)
-        print("piece:" + str(pt.piece_n) + " next_edge" + str(pt.next_edge_n) + " prev_edge" + str(pt.prev_edge_n) + " total_edge" + str(pt.total_edge) + " Is_reverse=" + str(pt.Is_reverse) + " point" + str(pt.point)+"corrpiece" + str(pt.corr_edge))
+        print("piece:" + str(pt.piece_n) + " next_edge" + str(pt.next_edge_n) + " prev_edge" + str(pt.prev_edge_n) + " prev_total_edge" + str(pt.prev_total_edge) + " total_edge" + str(pt.total_edge) + " Is_reverse=" + str(pt.Is_reverse) + " point" + str(pt.point)+"corrpiece" + str(pt.corr_edge))
         __tmp.append(draw(copy.deepcopy(Pieces), copy.deepcopy(Pieces.polygon), pt))

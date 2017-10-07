@@ -93,7 +93,7 @@ class Search:
 
 
     #メモ化
-    @lru_cache(maxsize=1000)
+    @lru_cache(maxsize=100)
     def make_piece_collection(self, piece_num):
 
         len_piece = len(self.pieces.length[piece_num])
@@ -212,7 +212,7 @@ class Search:
                         __Tmp = self.queue.get()
                         tmp_sort_list.append({"object":__Tmp, "total_edge":__Tmp.total_edge, "point":__Tmp.point, "delta":__Tmp.delta})
 
-                    sorted_list = sorted(tmp_sort_list, key=lambda x:(-x["point"], x["total_edge"]))
+                    sorted_list = sorted(tmp_sort_list, key=lambda x:(-x["point"], x["delta"], x["total_edge"]))
                     print(sorted_list[0]["point"])
                     for i in range(__BEAM_WIDTH):
                         if i == len(sorted_list):
