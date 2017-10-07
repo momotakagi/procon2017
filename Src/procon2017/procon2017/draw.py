@@ -42,11 +42,13 @@ class draw:
             disp_pieces.append(now_node.piece_n)
         """
 
+        total_piece_n.append(0)
+
         for (i) in range(len(polygon)-1):#len(polygon)-1
             root_n = len(root_list)-1-i
             now_node = root_list[root_n]
 
-            total_piece_n.append(now_node.piece_n)
+            #total_piece_n.append(now_node.piece_n)
 
             #現在のノードの処理
             total_edge = now_node.prev_total_edge
@@ -105,6 +107,8 @@ class draw:
             #1つ上のノードへ
             now_node = root_list[root_n-1]
             piece_n = now_node.piece_n
+
+            total_piece_n.append(now_node.piece_n)
 
             y = copy.deepcopy(polygon[piece_n][now_node.prev_edge_n])
             prev_edge_n = now_node.prev_edge_n + 1
@@ -182,6 +186,8 @@ class draw:
             cx = int(M['m10']/M['m00'])
             cy = int(M['m01']/M['m00'])
             transfer_center_g.append((cx,cy))
+
+        print("total_piece_n" + str(total_piece_n))
 
         #表示
         for (i) in range(len(polygon)):
