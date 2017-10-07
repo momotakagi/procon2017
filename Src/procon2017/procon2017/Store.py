@@ -7,7 +7,7 @@ import copy
 import module 
 import math
 from matplotlib import pyplot as plt
-
+from sympy.geometry import Point, Polygon
 
 
 def cul_angle(x, y):
@@ -23,7 +23,9 @@ def cul_angle(x, y):
     theta = rad * 180 / np.pi
 
     theta = round(theta,1)
-    return theta
+
+    a = float(theta)
+    return a
 
 
 def get_im(file_name):
@@ -37,9 +39,15 @@ def get_im(file_name):
 def half_size(im):
     hight = im.shape[0]
     width = im.shape[1]
-    half_size = cv2.resize(im,(round(width/6),round(hight/6)))
+    half_size = cv2.resize(im,(round(width/2),round(hight/2)))
     return half_size
     
+def resize(im):
+    hight = im.shape[0]
+    width = im.shape[1]
+    half_size = cv2.resize(im,(round(width/4),round(hight/4)))
+    return half_size
+
 def get_distance(x, y):
 
     x1 = x[0,0]
@@ -52,6 +60,14 @@ def get_distance(x, y):
     return d
 
 
+
+def show_im(im, name):
+    im = resize(copy.deepcopy(im))
+    cv2.imshow(name ,im)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
 def findcontours(im):
 
     im = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY) 
@@ -59,7 +75,7 @@ def findcontours(im):
     #ret,thresh = cv2.threshold(im, 0, 255, cv2.THRESH_BINARY)
 
     ret,thresh = cv2.threshold(im, 0, 255, cv2.THRESH_TOZERO | cv2.THRESH_OTSU)
-    show_im(thresh, "thresh")
+    #show_im(thresh, "thresh")
 
     image, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_CCOMP,cv2.CHAIN_APPROX_SIMPLE)
 
@@ -86,7 +102,7 @@ def findcontours(im):
     M = cv2.moments(cnt)
     area = cv2.contourArea(cnt)
     print(area)
-    show_im(im, "findcountours")
+    #show_im(im, "findcountours")
 
 
 
@@ -109,7 +125,7 @@ def colormask(im):
     #マスクと元画像の共通の領域を抽出
     #img_color = cv2.bitwise_and(im, im, mask=img_mask)
 
-    show_im(img_mask, "colormask")
+    #show_im(img_mask, "colormask")
 
     image, contours, hierarchy = cv2.findContours(img_mask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
     contours.sort(key=cv2.contourArea, reverse=True)
@@ -124,7 +140,7 @@ def colormask(im):
     #これらはとりあえずすべての近似
     im_all= np.copy(im)
     im_all = cv2.drawContours(im_all, contours, -1, (0,255,0), 3)
-    show_im(im_all, "findcountours")
+    #show_im(im_all, "findcountours")
     #***************************************************
 
 
@@ -158,7 +174,7 @@ def colormask_waku(im):
     #マスクと元画像の共通の領域を抽出
     #img_color = cv2.bitwise_and(im, im, mask=img_mask)
 
-    show_im(img_mask, "colormask")
+    #show_im(img_mask, "colormask")
     
     image, contours, hierarchy = cv2.findContours(img_mask,cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours.sort(key=cv2.contourArea, reverse=True)
@@ -176,7 +192,7 @@ def colormask_waku(im):
     #これらはとりあえずすべての近似
     im_all= np.copy(im)
     im_all = cv2.drawContours(im_all, contours, -1, (0,255,0), 3)
-    show_im(im_all, "findcountours waku")
+    #show_im(im_all, "findcountours waku")
     #***************************************************#
 
 
@@ -212,7 +228,7 @@ def approx_point(contours, im, Pieces, all_pixel):
         Area.append(cv2.contourArea(cnt))
 
         #輪郭近似
-        epsilon = 0.01*cv2.arcLength(cnt,True)
+        epsilon = 0.007*cv2.arcLength(cnt,True)
         approx = cv2.approxPolyDP(cnt,epsilon,False)
         approx = approx[0:-1]  #順番重複回避
         polygon.append(approx)
@@ -254,17 +270,36 @@ def approx_point(contours, im, Pieces, all_pixel):
 
 ############################################力技###################################################
              #2点間の中点にピースは含まれていなかったら360から引く
-             direction = (VecA + VecB) / 10            
+             direction = (VecA + VecB) / 2            
              direction = direction + approx[pivot]
              casted = direction.astype(int)
 
              Ang = 360 - Ang
+
+             point = Point(casted[0,0], casted[0,1])
+             poly = []
+             for ap in approx:
+                 poly.append((ap[0,0], ap[0,1]))
+
+             polys =  Polygon(*poly)
+             if polys.encloses_point(point):
+                 Ang = 360 - Ang
+
+             angle[i].append(Ang)
+
+             """
              for(pixel) in all_pixel:
                  if(casted[0,0] == pixel[0,0] and casted[0,1] == pixel[0,1]):
                      Ang = 360 - Ang
                      break
+            """
+             
 
-             angle[i].append(Ang)
+
+
+
+
+
              
         #角度リストをシフトして調整
         tmp = angle[i]
@@ -302,12 +337,12 @@ def approx_point(contours, im, Pieces, all_pixel):
 
          
           #重心を描画(文字)
-          cv2.putText(im0,"piece:" + str(i),Center_G[i],font, fontsize,(0,0,0))
+          cv2.putText(im0,"piece:" + str(i),Center_G[i],font, fontsize + 3,(0,0,0))
 
           
           #角ピースの情報表示
           for (prev, cordinate) in enumerate(approx):
-              im0 = cv2.circle(im, tuple(cordinate[0]), 3, (0,0,255), -1)
+              im0 = cv2.circle(im, tuple(cordinate[0]), 6, (0,0,255), -1)
 
               next = prev
               next += 1
@@ -347,11 +382,6 @@ def approx_point(contours, im, Pieces, all_pixel):
 
 
 
-
-def show_im(im, name):
-    cv2.imshow(name ,im)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
 
 

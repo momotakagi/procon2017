@@ -48,7 +48,8 @@ class State:
 
         #評価値
         self.point = 0
-
+        
+        self.delta = 0
         #現在の頂点数
         self.total_edge = 0
 
