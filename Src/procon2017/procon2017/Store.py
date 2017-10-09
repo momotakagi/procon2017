@@ -165,7 +165,7 @@ def colormask_waku(im):
     for i in reversed(range(len(contours))):
         if(cv2.contourArea(contours[i]) < 800):
             del contours[i]
-    del contours[0]        
+   # del contours[0]   
     #filter(lambda x: x % 2 is 0, contours)
 
 
